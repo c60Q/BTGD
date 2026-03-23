@@ -111,7 +111,6 @@ static uint8 linkUpFlag;
  */
 static uint8 g_netdevRxTailUseOnePastLast = 1u;
 static uint8 g_netdevRxUseDaBasedRouting = 0u;
-static uint8 g_netdevRxAcceptanceMode = 1u; /* 1 = strict station-MAC / DA-based, 0 = permissive debug */
 
 #define NETDEV_RX_PROGRESS_LOG_PKT_STEP           (64u)
 #define NETDEV_RX_STALL_SUMMARY_LOG_MASK          (0x1FFFu)
@@ -169,7 +168,6 @@ static void netdev_toggle_rx_tail_mode(const char *reason);
 static void netdev_force_rx_quiet_summary(const char *reason);
 static void netdev_force_rx_rearm(void);
 static void netdev_force_tx_rearm(void);
-static void netdev_toggle_rx_acceptance_mode(const char *reason);
 static void netdev_prepare_tx_channel(void);
 static void netdev_force_rx_queue_path_config(uint8 verbose);
 static void netdev_debug_dump_rx_queue_path(const char *label);
@@ -180,7 +178,6 @@ static void netdev_debug_dump_rx_packet_counters(const char *label);
 static void netdev_debug_dump_rx_buffer_window(const char *label, uint32 bufferAddr);
 static void netdev_debug_dump_rx_buffer_ring_heads(const char *label, uint32 count);
 static void netdev_debug_dump_mac_dma_counters(void);
-static void netdev_debug_dump_mac_programming(const char *label);
 static void netdev_debug_print_ipv4_bytes(const char *label, const uint8 *ipBytes);
 static void netdev_debug_print_eth_tx_summary(void);
 static void netdev_debug_print_eth_rx_summary(const uint8 *frame, uint16 frameLen);
@@ -193,68 +190,12 @@ static volatile IfxGeth_RxDescr *netdev_find_completed_rx_descriptor(void);
 static uint8 netdev_rx_dma_needs_recovery(void);
 static void netdev_recover_rx_channel_without_rearm(void);
 
-static void netdev_debug_dump_mac_programming(const char *label)
-{
-  uint32 macHigh;
-  uint32 macLow;
-  uint8  regMac[6];
-  uint32 macMatch;
-
-  macHigh = g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH0.U;
-  macLow  = g_IfxGeth.gethSFR->MAC_ADDRESS_LOW0.U;
-
-  regMac[0] = (uint8)((macLow >> 0u) & 0xFFu);
-  regMac[1] = (uint8)((macLow >> 8u) & 0xFFu);
-  regMac[2] = (uint8)((macLow >> 16u) & 0xFFu);
-  regMac[3] = (uint8)((macLow >> 24u) & 0xFFu);
-  regMac[4] = (uint8)((macHigh >> 0u) & 0xFFu);
-  regMac[5] = (uint8)((macHigh >> 8u) & 0xFFu);
-
-  macMatch = ((regMac[0] == macAddress.addr[0]) &&
-              (regMac[1] == macAddress.addr[1]) &&
-              (regMac[2] == macAddress.addr[2]) &&
-              (regMac[3] == macAddress.addr[3]) &&
-              (regMac[4] == macAddress.addr[4]) &&
-              (regMac[5] == macAddress.addr[5])) ? 1u : 0u;
-
-  debugPrintOnce = true;
-  Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[0] = 0x", 0u, 0, (uint32)macAddress.addr[0], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[1] = 0x", 0u, 0, (uint32)macAddress.addr[1], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[2] = 0x", 0u, 0, (uint32)macAddress.addr[2], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[3] = 0x", 0u, 0, (uint32)macAddress.addr[3], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[4] = 0x", 0u, 0, (uint32)macAddress.addr[4], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  CFG_MAC[5] = 0x", 0u, 0, (uint32)macAddress.addr[5], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[0] = 0x", 0u, 0, (uint32)regMac[0], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[1] = 0x", 0u, 0, (uint32)regMac[1], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[2] = 0x", 0u, 0, (uint32)regMac[2], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[3] = 0x", 0u, 0, (uint32)regMac[3], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[4] = 0x", 0u, 0, (uint32)regMac[4], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  REG_MAC[5] = 0x", 0u, 0, (uint32)regMac[5], dbug_num_type_HEX32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  MAC register match = ", macMatch, 0, 0u, dbug_num_type_U32);
-}
-
-
 static void netdev_debug_dump_rx_queue_path(const char *label)
 {
   debugPrintOnce = true;
   Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
   debugPrintOnce = true;
   Debug_Print_Out("  RX route mode (DA-based) = ", g_netdevRxUseDaBasedRouting, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Out("  RX accept mode = ", g_netdevRxAcceptanceMode, 0, 0u, dbug_num_type_U32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_PACKET_FILTER = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_PACKET_FILTER.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
@@ -277,7 +218,6 @@ static void netdev_debug_dump_rx_queue_path(const char *label)
   Debug_Print_Out("  MAC_ADDR0_HIGH = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH0.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_ADDR0_LOW = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_ADDRESS_LOW0.U, dbug_num_type_HEX32);
-  netdev_debug_dump_mac_programming("  MAC programming decode");
 }
 
 
@@ -480,14 +420,24 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
 {
   __dsync();
 
-  /* RX acceptance mode 1: strict station-MAC path.
-   *   - queue0 -> DMA0 via DA-based routing enable bit
-   *   - disable promiscuous / receive-all / filter-fail queues
-   *   - keep broadcast reception enabled so ARP requests for our IP still pass
+  /* Hard-route the whole debug receive path into RX queue 0 / DMA channel 0.
    *
-   * RX acceptance mode 0: permissive debug path.
-   *   - current broad accept-all/filter-fail steering used to observe background traffic
+   * debug_log_7 shows a persistent pattern where:
+   *   - MAC RX good-packet counters keep increasing,
+   *   - RX descriptors stay owned by DMA (RDES3 = 0xC1000000),
+   *   - CURRENT_APP_RXDESC never advances,
+   *   - MTL_RXQ0 DEBUG remains empty.
+   *
+   * That is more consistent with traffic not being steered into RXQ0 at all than
+   * with a simple tail-pointer mistake. So this helper now explicitly routes the
+   * common traffic classes we are seeing on the wire to queue 0:
+   *   - untagged packets
+   *   - multicast / broadcast packets
+   *   - filter-fail packets (useful while PR/RA debug filtering is enabled)
+   * and it restores the RXQ0 store-and-forward / queue-size settings as well.
    */
+  g_netdevRxUseDaBasedRouting = 0u;
+
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.U = 0u;
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.U = 0u;
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL2.U = 0u;
@@ -495,7 +445,24 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
   g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.U = 0u;
 
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.B.RXQ0EN = 2u;
+
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.AVCPQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.PTPQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.UPQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQEN = 1u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TACPQE = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TPQC = 0u;
+
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQE = 1u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQE = 1u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQ = 0u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQE = 1u;
+  g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQ = 0u;
+
   g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0MDMACH = 0u;
+  g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0DDMACH = 0u;
 
   g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RSF = 1u;
   g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.FEP = 1u;
@@ -503,64 +470,14 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
   g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.DIS_TCP_EF = 1u;
   g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RQS = (uint32)IfxGeth_QueueSize_2560Bytes;
 
+  /* Keep the station MAC programmed, but widen acceptance during debug so every
+   * on-wire packet type we care about is eligible to reach RXQ0.
+   */
   IfxGeth_mac_setMacAddress(g_IfxGeth.gethSFR, (uint8 *)&macAddress.addr[0]);
-
-  if (g_netdevRxAcceptanceMode != 0u)
-  {
-    g_netdevRxUseDaBasedRouting = 1u;
-
-    /* Route queue0 through the DA-based selector to DMA0, with normal MAC
-     * address filtering only. This is the cleanest way to test whether directed
-     * frames for 08:00:27:69:5B:45 can ever reach RXQ0.
-     */
-    g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0DDMACH = 1u;
-    IfxGeth_mac_setPromiscuousMode(g_IfxGeth.gethSFR, FALSE);
-    IfxGeth_mac_setAllMulticastPassing(g_IfxGeth.gethSFR, FALSE);
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.RA = 0u;
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.DBF = 0u;
-
-    /* Do not rely on power-on defaults here. Explicitly steer ordinary unicast
-     * and multicast/broadcast traffic to queue0 while keeping DA-based DMA0
-     * selection enabled. This removes ambiguity when we compare strict vs
-     * permissive acceptance in the field logs.
-     */
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.AVCPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.PTPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.UPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQEN = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TACPQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TPQC = 0u;
-
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQE = 0u;
-  }
-  else
-  {
-    g_netdevRxUseDaBasedRouting = 0u;
-
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.AVCPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.PTPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.UPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQEN = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TACPQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TPQC = 0u;
-
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQE = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQE = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQE = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQ = 0u;
-
-    IfxGeth_mac_setPromiscuousMode(g_IfxGeth.gethSFR, TRUE);
-    IfxGeth_mac_setAllMulticastPassing(g_IfxGeth.gethSFR, TRUE);
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.RA = 1u;
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.DBF = 0u;
-  }
-
+  IfxGeth_mac_setPromiscuousMode(g_IfxGeth.gethSFR, TRUE);
+  IfxGeth_mac_setAllMulticastPassing(g_IfxGeth.gethSFR, TRUE);
+  g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.RA = 1u;
+  g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.DBF = 0u;
   __dsync();
 
   if (verbose != 0u)
@@ -781,8 +698,6 @@ static void netdev_debug_dump_rx_visibility(const char *label)
   debugPrintOnce = true;
   Debug_Print_Out("RX_CONTROL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
-  Debug_Print_Out("RX accept mode = ", g_netdevRxAcceptanceMode, 0, 0u, dbug_num_type_U32);
-  debugPrintOnce = true;
   Debug_Print_Out("DMA_STAT RI = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].STATUS.B.RI, 0, 0u, dbug_num_type_U32);
   debugPrintOnce = true;
   Debug_Print_Out("DMA_STAT RBU = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].STATUS.B.RBU, 0, 0u, dbug_num_type_U32);
@@ -902,8 +817,6 @@ static void netdev_recover_rx_channel_without_rearm(void)
    * - start and wake the channel again.
    */
   g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.SR = 0u;
-  IfxGeth_dma_clearAllInterruptFlags(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0);
-  IfxGeth_mtl_clearAllInterruptFlags(g_IfxGeth.gethSFR, IfxGeth_MtlQueue_0);
   __dsync();
 
   netdev_force_rx_queue_path_config(0u);
@@ -996,17 +909,6 @@ static void netdev_toggle_rx_tail_mode(const char *reason)
 }
 
 
-static void netdev_toggle_rx_acceptance_mode(const char *reason)
-{
-  g_netdevRxAcceptanceMode ^= 1u;
-
-  Debug_Print_Force_Out("RX toggle accept reason", 0u, 0, 0u, dbug_num_type_str);
-  Debug_Print_Force_Out(reason, 0u, 0, 0u, dbug_num_type_str);
-  Debug_Print_Force_Out("RX toggle accept new mode = ", g_netdevRxAcceptanceMode, 0, 0u, dbug_num_type_U32);
-
-  netdev_force_rx_queue_path_config(1u);
-}
-
 static void netdev_force_rx_quiet_summary(const char *reason)
 {
   volatile IfxGeth_RxDescr *swDescriptor;
@@ -1017,16 +919,11 @@ static void netdev_force_rx_quiet_summary(const char *reason)
   Debug_Print_Force_Out(reason, 0u, 0, 0u, dbug_num_type_str);
   Debug_Print_Force_Out("RX quiet linkUp = ", (uint32_t)linkUpFlag, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet tail mode = ", g_netdevRxTailUseOnePastLast, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Force_Out("RX quiet accept mode = ", g_netdevRxAcceptanceMode, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet RXPKTGB = ", (uint32_t)g_IfxGeth.gethSFR->RX_PACKETS_COUNT_GOOD_BAD.B.RXPKTGB, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXUNICAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_UNICAST_PACKETS_GOOD.B.RXUCASTG, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXBCAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_BROADCAST_PACKETS_GOOD.B.RXBCASTG, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXMCAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_MULTICAST_PACKETS_GOOD.B.RXMCASTG, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Force_Out("RX quiet RXCRCERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_CRC_ERROR_PACKETS.B.RXCRCERR, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Force_Out("RX quiet RXALIGNERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_ALIGNMENT_ERROR_PACKETS.B.RXALGNERR, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Force_Out("RX quiet RXLENERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_LENGTH_ERROR_PACKETS.B.RXLENERR, 0, 0u, dbug_num_type_U32);
-  Debug_Print_Force_Out("RX quiet RXRCVERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_RECEIVE_ERROR_PACKETS.B.RXRCVERR, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet CUR_APP_RXDESC = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet SW_RXDESC = 0x", 0u, 0, (uint32)swDescriptor, dbug_num_type_HEX32);
 }
@@ -1624,10 +1521,6 @@ unsigned int netdev_read(void)
           netdev_debug_dump_rx_low_level_state("RX MAC-only low-level state");
           netdev_debug_dump_rx_queue_dma_matrix("RX MAC-only queue/dma matrix");
           netdev_debug_dump_rx_packet_counters("RX MAC-only packet counters");
-          if (g_IfxGeth.gethSFR->RX_UNICAST_PACKETS_GOOD.B.RXUCASTG == 0u)
-          {
-            Debug_Print_Force_Out("RX MAC-only hint: directed unicast still zero", 0u, 0, 0u, dbug_num_type_str);
-          }
           netdev_debug_dump_rx_current_buffer_head("RX MAC-only current buffer head");
           netdev_debug_dump_rx_buffer_ring_heads("RX MAC-only ring buffer heads", 4u);
           netdev_debug_dump_rx_ring_descriptors("RX MAC-only full ring descriptors");
@@ -1645,13 +1538,7 @@ unsigned int netdev_read(void)
         }
         if ((rxMacOnlyRecoverCounter & NETDEV_RX_MAC_ONLY_RECOVERY_STEP_MASK) == 0u)
         {
-          if ((rxMacOnlyRecoverCounter & 0x0Fu) == 0u)
-          {
-            netdev_toggle_rx_acceptance_mode("RX MAC-only acceptance toggle");
-            netdev_force_rx_quiet_summary("RX MAC-only summary before accept-mode rearm");
-            netdev_force_rx_rearm();
-          }
-          else if ((rxMacOnlyRecoverCounter & 0x07u) == 0u)
+          if ((rxMacOnlyRecoverCounter & 0x07u) == 0u)
           {
             netdev_toggle_rx_tail_mode("RX MAC-only recovery toggle");
             netdev_force_rx_quiet_summary("RX MAC-only summary before full rearm");
