@@ -921,6 +921,9 @@ static void netdev_force_rx_quiet_summary(const char *reason)
   Debug_Print_Force_Out("RX quiet tail mode = ", g_netdevRxTailUseOnePastLast, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet RXPKTGB = ", (uint32_t)g_IfxGeth.gethSFR->RX_PACKETS_COUNT_GOOD_BAD.B.RXPKTGB, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet RXUNICAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_UNICAST_PACKETS_GOOD.B.RXUCASTG, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet RXBCAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_BROADCAST_PACKETS_GOOD.B.RXBCASTG, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet RXMCAST = ", (uint32_t)g_IfxGeth.gethSFR->RX_MULTICAST_PACKETS_GOOD.B.RXMCASTG, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet CUR_APP_RXDESC = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet SW_RXDESC = 0x", 0u, 0, (uint32)swDescriptor, dbug_num_type_HEX32);
 }
@@ -928,43 +931,53 @@ static void netdev_force_rx_quiet_summary(const char *reason)
 
 static void netdev_force_rx_rearm(void)
 {
-  uint32 i;
-  uint32 rxDescBase;
-  uint32 rxTail;
-  volatile IfxGeth_RxDescr *descr;
+  uint32                      rxDescBase;
+  uint32                      rxTail;
+  volatile IfxGeth_RxDescr   *descr;
+  IfxGeth_Eth_RxChannelConfig rxChannelConfig;
 
   rxDescBase = NETDEV_GETH_RXDESC_BASE_ADDR;
-  rxTail = netdev_get_rx_tail_pointer_value(g_netdevRxTailUseOnePastLast);
   descr = (volatile IfxGeth_RxDescr *)NETDEV_GETH_RXDESC_BASE_ADDR;
 
-  for (i = 0u; i < (uint32)IFXGETH_MAX_RX_DESCRIPTORS; i++)
-  {
-    descr[i].RDES0.U = NETDEV_GETH_RXBUF_BASE_ADDR + ((uint32)IFXGETH_MAX_RX_BUFFER_SIZE * i);
-    descr[i].RDES1.U = 0u;
-    descr[i].RDES2.U = 0u;
-    descr[i].RDES3.U = 0xC1000000u;
-  }
+  memset((void *)NETDEV_GETH_RXDESC_BASE_ADDR, 0, NETDEV_GETH_RXDESC_TOTAL_SIZE);
+  memset((void *)NETDEV_GETH_RXBUF_BASE_ADDR, 0, NETDEV_GETH_RXBUF_TOTAL_SIZE);
 
-  g_IfxGeth.rxChannel[IfxGeth_RxDmaChannel_0].rxDescrPtr = descr;
+  rxChannelConfig.channelId             = IfxGeth_RxDmaChannel_0;
+  rxChannelConfig.maxBurstLength        = IfxGeth_DmaBurstLength_32;
+  rxChannelConfig.rxDescrList           = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
+  rxChannelConfig.rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_BASE_ADDR;
+  rxChannelConfig.rxBuffer1Size         = IFXGETH_MAX_RX_BUFFER_SIZE;
+
   g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.SR = 0u;
   __dsync();
-  IfxGeth_dma_setRxBufferSize(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, IFXGETH_MAX_RX_BUFFER_SIZE);
+
+  g_IfxGeth.rxChannel[IfxGeth_RxDmaChannel_0].rxDescrList = rxChannelConfig.rxDescrList;
+  g_IfxGeth.rxChannel[IfxGeth_RxDmaChannel_0].rxDescrPtr  = descr;
+  IfxGeth_Eth_initReceiveDescriptors(&g_IfxGeth, &rxChannelConfig);
+
+  rxTail = netdev_get_rx_tail_pointer_value(g_netdevRxTailUseOnePastLast);
   IfxGeth_dma_setRxDescriptorListAddress(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, rxDescBase);
   IfxGeth_dma_setRxDescriptorTailPointer(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, rxTail);
   IfxGeth_dma_setRxDescriptorRingLength(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, (IFXGETH_MAX_RX_DESCRIPTORS - 1u));
+  IfxGeth_mtl_enableRxQueue(g_IfxGeth.gethSFR, IfxGeth_RxMtlQueue_0);
   __dsync();
+
   netdev_force_rx_queue_path_config(0u);
-  IfxGeth_Eth_startReceivers(&g_IfxGeth, 1u);
+  IfxGeth_Eth_startReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
   IfxGeth_Eth_wakeupReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
 
   debugPrintOnce = true;
   Debug_Print_Out("RX ring rearmed", 0u, 0, 0u, dbug_num_type_str);
+  debugPrintOnce = true;
+  Debug_Print_Out("RX rearm init path = iLLD", 0u, 0, 0u, dbug_num_type_str);
   debugPrintOnce = true;
   Debug_Print_Out("RXDESC_LIST = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_LIST_ADDRESS.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("RXDESC_TAIL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("RX_CONTROL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.U, dbug_num_type_HEX32);
+  debugPrintOnce = true;
+  netdev_debug_dump_rx_descriptor("RX rearm descriptor[0]", &descr[0]);
   netdev_debug_dump_rx_queue_path("RX rearm queue path");
 }
 
