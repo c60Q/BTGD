@@ -1,0 +1,488 @@
+	; Module start
+	.compiler_version	"TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler v1.1r8 Build 22011964"
+	.compiler_invocation	"ctc -f cc23960a --dep-file=uip/core/uip/uiplib.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc39xb -D__CPU_TC39XB__ --core=tc1.6.2 --fp-model=+float -D__CPU__=tc39xb -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Configurations -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B\\\\_Reg -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Adc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Eth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Io -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Impl -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_PinMap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\source -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps\\\\dhcpc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3\\\\Tasking -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2004 -o uip/core/uip/uiplib.src ../uip/core/uip/uiplib.c"
+	.compiler_name		"ctc"
+	;source	'../uip/core/uip/uiplib.c'
+
+	
+$TC162
+	
+	.sdecl	'.text.uiplib.uiplib_ipaddrconv',code,cluster('uiplib_ipaddrconv')
+	.sect	'.text.uiplib.uiplib_ipaddrconv'
+	.align	2
+	
+	.global	uiplib_ipaddrconv
+; Function uiplib_ipaddrconv
+.L17:
+uiplib_ipaddrconv:	.type	func
+	mov	d0,#0
+.L38:
+	mov	d2,#0
+.L39:
+	j	.L2
+.L3:
+	mov	d1,#0
+.L4:
+	ld.b	d3,[a4]0
+.L42:
+	add	d1,#1
+.L41:
+	extr.u	d1,d1,#0,#8
+.L43:
+	jlt.u	d1,#5,.L5
+.L54:
+	mov	d2,#0
+.L40:
+	j	.L6
+.L5:
+	mov	d15,#46
+.L55:
+	jeq	d15,d3,.L7
+.L56:
+	jne	d3,#0,.L8
+.L7:
+	st.b	[a5],d0
+.L57:
+	add.a	a5,#1
+.L58:
+	mov	d0,#0
+.L59:
+	j	.L9
+.L8:
+	mov	d15,#48
+.L60:
+	jlt	d3,d15,.L10
+.L61:
+	mov	d15,#57
+.L62:
+	jlt	d15,d3,.L11
+.L63:
+	mov	d15,#10
+.L64:
+	add	d4,d3,#-48
+.L65:
+	madd	d15,d4,d0,d15
+	extr.u	d0,d15,#0,#8
+.L66:
+	j	.L12
+.L11:
+.L10:
+	mov	d2,#0
+.L44:
+	j	.L13
+.L12:
+.L9:
+	add.a	a4,#1
+.L67:
+	mov	d15,#46
+.L68:
+	jeq	d15,d3,.L14
+.L69:
+	jne	d3,#0,.L4
+.L14:
+	add	d2,#1
+.L2:
+	jlt.u	d2,#4,.L3
+.L70:
+	mov	d2,#1
+.L45:
+	j	.L15
+.L15:
+.L13:
+.L6:
+	ret
+.L28:
+	
+__uiplib_ipaddrconv_function_end:
+	.size	uiplib_ipaddrconv,__uiplib_ipaddrconv_function_end-uiplib_ipaddrconv
+.L26:
+	; End of function
+	
+	.calls	'uiplib_ipaddrconv','',0
+	.sdecl	'.debug_info',debug
+	.sect	'.debug_info'
+.L19:
+	.word	1199
+	.half	3
+	.word	.L20
+	.byte	4
+.L18:
+	.byte	1
+	.byte	'../uip/core/uip/uiplib.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L21
+.L27:
+	.byte	2
+	.byte	'unsigned char',0,1,8
+.L34:
+	.byte	2
+	.byte	'char',0,1,6
+.L29:
+	.byte	3
+	.word	204
+.L31:
+	.byte	3
+	.word	187
+	.byte	2
+	.byte	'unsigned int',0,4,7,4
+	.byte	'__size_t',0,1,1,1
+	.word	222
+	.byte	5,1,3
+	.word	255
+	.byte	4
+	.byte	'__codeptr',0,1,1,1
+	.word	257
+	.byte	2
+	.byte	'int',0,4,5,4
+	.byte	'__intptr_t',0,1,1,1
+	.word	280
+	.byte	4
+	.byte	'__uintptr_t',0,1,1,1
+	.word	222
+	.byte	4
+	.byte	'u8_t',0,2,66,23
+	.word	187
+	.byte	2
+	.byte	'unsigned short int',0,2,7,4
+	.byte	'u16_t',0,2,75,24
+	.word	339
+	.byte	4
+	.byte	'uip_stats_t',0,2,85,24
+	.word	339
+	.byte	4
+	.byte	'uint8_t',0,3,242,1,41
+	.word	187
+	.byte	4
+	.byte	'uint16_t',0,3,246,1,41
+	.word	339
+	.byte	4
+	.byte	'uint32_t',0,3,254,1,41
+	.word	222
+	.byte	4
+	.byte	'boot_bool',0,4,20,25
+	.word	187
+	.byte	4
+	.byte	'boot_int8u',0,4,23,25
+	.word	187
+	.byte	4
+	.byte	'boot_int16u',0,4,25,25
+	.word	339
+	.byte	4
+	.byte	'boot_int32u',0,4,27,25
+	.word	222
+	.byte	6,24
+	.word	204
+	.byte	7,23,0,8,4,62,9,48,9
+	.byte	'image_magic',0
+	.word	222
+	.byte	4,2,35,0,9
+	.byte	'reserved_for_magic',0
+	.word	222
+	.byte	4,2,35,4,9
+	.byte	'image_version',0
+	.word	525
+	.byte	24,2,35,8,9
+	.byte	'image_base',0
+	.word	222
+	.byte	4,2,35,32,9
+	.byte	'image_size',0
+	.word	222
+	.byte	4,2,35,36,9
+	.byte	'image_crc',0
+	.word	222
+	.byte	4,2,35,40,9
+	.byte	'reserved',0
+	.word	222
+	.byte	4,2,35,44,0,4
+	.byte	'bcb_image_info_t',0,4,71,2
+	.word	534
+	.byte	6,141,4
+	.word	187
+	.byte	7,140,4,0,8,5,9,9,148,4,9
+	.byte	'ctoData',0
+	.word	714
+	.byte	141,4,2,35,0,9
+	.byte	'connected',0
+	.word	187
+	.byte	1,3,35,141,4,9
+	.byte	'protection',0
+	.word	187
+	.byte	1,3,35,142,4,9
+	.byte	's_n_k_resource',0
+	.word	187
+	.byte	1,3,35,143,4,9
+	.byte	'ctoPending',0
+	.word	187
+	.byte	1,3,35,144,4,9
+	.byte	'ctoLen',0
+	.word	339
+	.byte	2,3,35,146,4,0,4
+	.byte	'transceiver_info_t',0,5,18,2
+	.word	725
+	.byte	6,141,4
+	.word	187
+	.byte	7,140,4,0,6,154,8
+	.word	187
+	.byte	7,153,8,0,10
+	.byte	'net_state',0,6,51,16,220,20,9
+	.byte	'dto_counter',0
+	.word	222
+	.byte	4,2,35,0,9
+	.byte	'dto_data',0
+	.word	881
+	.byte	141,4,2,35,4,9
+	.byte	'dto_len',0
+	.word	339
+	.byte	2,3,35,146,4,9
+	.byte	'dto_tx_req',0
+	.word	187
+	.byte	1,3,35,148,4,9
+	.byte	'dto_tx_pending',0
+	.word	187
+	.byte	1,3,35,149,4,9
+	.byte	'receiveInfo',0
+	.word	725
+	.byte	148,4,3,35,152,4,9
+	.byte	'transmitInfo',0
+	.word	725
+	.byte	148,4,3,35,172,8,9
+	.byte	'rx_accum',0
+	.word	892
+	.byte	154,8,3,35,192,12,9
+	.byte	'rx_accum_len',0
+	.word	339
+	.byte	2,3,35,218,20,0,4
+	.byte	'uip_tcp_appstate_t',0,5,52,26
+	.word	903
+	.byte	6,4
+	.word	339
+	.byte	7,1,0,4
+	.byte	'uip_ip4addr_t',0,7,62,15
+	.word	1141
+	.byte	4
+	.byte	'uip_ipaddr_t',0,7,67,23
+	.word	1150
+	.byte	6,4
+	.word	339
+	.byte	7,1,0,0
+	.sdecl	'.debug_abbrev',debug
+	.sect	'.debug_abbrev'
+.L20:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,36,0,3,8,11,15,62,15,0,0,3,15,0,73,19,0,0,4,22,0,3,8,58
+	.byte	15,59,15,57,15,73,19,0,0,5,21,0,54,15,0,0,6,1,1,11,15,73,19,0,0,7,33,0,47,15,0,0,8,19,1,58,15,59,15,57
+	.byte	15,11,15,0,0,9,13,0,3,8,73,19,11,15,56,9,0,0,10,19,1,3,8,58,15,59,15,57,15,11,15,0,0,0
+	.sdecl	'.debug_line',debug
+	.sect	'.debug_line'
+.L21:
+	.word	.L47-.L46
+.L46:
+	.half	3
+	.word	.L49-.L48
+.L48:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.byte	'D:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app',0
+	.byte	'C:\\Infineon\\AURIX-Studio-1.9.4\\plugins\\com.infineon.aurix.tools_1.9.4\\build_system\\tools\\Compilers\\Tasking_1.1r8\\ctc\\include\\',0
+	.byte	'D:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head',0,0
+	.byte	'../uip/core/uip/uiplib.c',0,0,0,0
+	.byte	'uip-conf.h',0,1,0,0
+	.byte	'stdint.h',0,2,0,0
+	.byte	'boot_types.h',0,3,0,0
+	.byte	'boot_transport.h',0,3,0,0
+	.byte	'net.h',0,1,0,0
+	.byte	'..\\uip\\core\\uip\\uip.h',0,0,0,0,0
+.L49:
+.L47:
+	.sdecl	'.debug_info',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_info'
+.L22:
+	.word	342
+	.half	3
+	.word	.L23
+	.byte	4,1
+	.byte	'../uip/core/uip/uiplib.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L25,.L24
+	.byte	2
+	.word	.L18
+	.byte	3
+	.byte	'uiplib_ipaddrconv',0,1,43,1
+	.word	.L27
+	.byte	1,1,1
+	.word	.L17,.L28,.L16
+	.byte	4
+	.byte	'addrstr',0,1,43,25
+	.word	.L29,.L30
+	.byte	4
+	.byte	'ipaddr',0,1,43,49
+	.word	.L31,.L32
+	.byte	5
+	.word	.L17,.L28
+	.byte	6
+	.byte	'tmp',0,1,45,17
+	.word	.L27,.L33
+	.byte	6
+	.byte	'c',0,1,46,8
+	.word	.L34,.L35
+	.byte	6
+	.byte	'i',0,1,47,17
+	.word	.L27,.L36
+	.byte	6
+	.byte	'j',0,1,47,20
+	.word	.L27,.L37
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_abbrev'
+.L23:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,1,17,1,18,1,0,0,6
+	.byte	52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_line'
+.L24:
+	.word	.L51-.L50
+.L50:
+	.half	3
+	.word	.L53-.L52
+.L52:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uiplib.c',0,0,0,0,0
+.L53:
+	.byte	5,7,7,0,5,2
+	.word	.L17
+	.byte	3,48,1,5,10,9
+	.half	.L38-.L17
+	.byte	3,2,1,5,20,9
+	.half	.L39-.L38
+	.byte	1,5,7,9
+	.half	.L3-.L39
+	.byte	3,2,1,5,11,9
+	.half	.L4-.L3
+	.byte	3,3,1,5,7,9
+	.half	.L42-.L4
+	.byte	3,1,1,9
+	.half	.L43-.L42
+	.byte	3,1,1,5,16,7,9
+	.half	.L54-.L43
+	.byte	3,2,1,5,9,9
+	.half	.L40-.L54
+	.byte	1,5,16,9
+	.half	.L5-.L40
+	.byte	3,2,1,5,11,9
+	.half	.L55-.L5
+	.byte	1,5,25,7,9
+	.half	.L56-.L55
+	.byte	1,5,17,7,9
+	.half	.L7-.L56
+	.byte	3,2,1,5,9,9
+	.half	.L57-.L7
+	.byte	3,1,1,5,13,9
+	.half	.L58-.L57
+	.byte	3,1,1,5,22,9
+	.half	.L59-.L58
+	.byte	3,126,1,5,21,9
+	.half	.L8-.L59
+	.byte	3,4,1,5,16,9
+	.half	.L60-.L8
+	.byte	1,5,33,7,9
+	.half	.L61-.L60
+	.byte	1,5,30,9
+	.half	.L62-.L61
+	.byte	1,5,22,7,9
+	.half	.L63-.L62
+	.byte	3,2,1,5,31,9
+	.half	.L64-.L63
+	.byte	1,5,26,9
+	.half	.L65-.L64
+	.byte	1,5,37,9
+	.half	.L66-.L65
+	.byte	1,5,16,9
+	.half	.L10-.L66
+	.byte	3,4,1,5,9,9
+	.half	.L44-.L10
+	.byte	1,5,7,9
+	.half	.L9-.L44
+	.byte	3,2,1,5,17,9
+	.half	.L67-.L9
+	.byte	3,2,1,5,12,9
+	.half	.L68-.L67
+	.byte	1,5,26,7,9
+	.half	.L69-.L68
+	.byte	1,5,22,7,9
+	.half	.L14-.L69
+	.byte	3,101,1,5,20,9
+	.half	.L2-.L14
+	.byte	1,5,10,7,9
+	.half	.L70-.L2
+	.byte	3,29,1,5,3,9
+	.half	.L45-.L70
+	.byte	1,5,1,9
+	.half	.L6-.L45
+	.byte	3,1,1,7,9
+	.half	.L26-.L6
+	.byte	0,1,1
+.L51:
+	.sdecl	'.debug_ranges',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_ranges'
+.L25:
+	.word	-1,.L17,0,.L26-.L17,0,0
+	.sdecl	'.debug_loc',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_loc'
+.L30:
+	.word	-1,.L17,0,.L28-.L17
+	.half	1
+	.byte	100
+	.word	0,0
+.L35:
+	.word	-1,.L17,.L42-.L17,.L2-.L17
+	.half	1
+	.byte	83
+	.word	0,0
+.L36:
+	.word	-1,.L17,.L39-.L17,.L40-.L17
+	.half	1
+	.byte	82
+	.word	.L5-.L17,.L44-.L17
+	.half	1
+	.byte	82
+	.word	.L9-.L17,.L45-.L17
+	.half	1
+	.byte	82
+	.word	0,0
+.L32:
+	.word	-1,.L17,0,.L28-.L17
+	.half	1
+	.byte	101
+	.word	0,0
+.L37:
+	.word	-1,.L17,.L4-.L17,.L41-.L17
+	.half	1
+	.byte	81
+	.word	.L43-.L17,.L2-.L17
+	.half	1
+	.byte	81
+	.word	0,0
+.L33:
+	.word	-1,.L17,.L38-.L17,.L28-.L17
+	.half	5
+	.byte	144,32,157,32,0
+	.word	0,0
+.L16:
+	.word	-1,.L17,0,.L28-.L17
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_frame',debug
+	.sect	'.debug_frame'
+.L71:
+	.word	48
+	.word	-1
+	.byte	3,0,2,1,27,12,26,0,8,26,8,27,8,30,8,29,8,28,8,16,8,17,8,24,8,25,8,31,8,32,8,33,8,34,8,35,8,36,8,37,8,38
+	.byte	8,39
+	.sdecl	'.debug_frame',debug,cluster('uiplib_ipaddrconv')
+	.sect	'.debug_frame'
+	.word	20
+	.word	.L71,.L17,.L28-.L17
+	.byte	8,18,8,19,8,22,8,23
+	; Module end

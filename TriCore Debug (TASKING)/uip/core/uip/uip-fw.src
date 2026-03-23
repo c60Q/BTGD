@@ -1,0 +1,2579 @@
+	; Module start
+	.compiler_version	"TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler v1.1r8 Build 22011964"
+	.compiler_invocation	"ctc -f cc22988a --dep-file=uip/core/uip/uip-fw.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc39xb -D__CPU_TC39XB__ --core=tc1.6.2 --fp-model=+float -D__CPU__=tc39xb -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Configurations -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B\\\\_Reg -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Adc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Eth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Io -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Impl -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_PinMap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\source -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps\\\\dhcpc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3\\\\Tasking -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2004 -o uip/core/uip/uip-fw.src ../uip/core/uip/uip-fw.c"
+	.compiler_name		"ctc"
+	;source	'../uip/core/uip/uip-fw.c'
+
+	
+$TC162
+	
+	.sdecl	'.text.uip-fw.uip_fw_init',code,cluster('uip_fw_init')
+	.sect	'.text.uip-fw.uip_fw_init'
+	.align	2
+	
+	.global	uip_fw_init
+; Function uip_fw_init
+.L49:
+uip_fw_init:	.type	func
+	movh.a	a15,#@his(defaultnetif)
+	lea	a15,[a15]@los(defaultnetif)
+.L190:
+	mov.a	a2,#0
+.L191:
+	st.a	[a15],a2
+.L192:
+	j	.L2
+.L3:
+	movh.a	a15,#@his(netifs)
+	lea	a15,[a15]@los(netifs)
+	ld.a	a15,[a15]
+.L159:
+	movh.a	a2,#@his(netifs)
+	lea	a2,[a2]@los(netifs)
+.L193:
+	movh.a	a4,#@his(netifs)
+	lea	a4,[a4]@los(netifs)
+	ld.a	a4,[a4]
+.L194:
+	ld.a	a4,[a4]
+.L195:
+	st.a	[a2],a4
+.L196:
+	mov.a	a2,#0
+.L197:
+	st.a	[a15],a2
+.L2:
+	movh.a	a15,#@his(netifs)
+	lea	a15,[a15]@los(netifs)
+	ld.w	d15,[a15]
+.L198:
+	jne	d15,#0,.L3
+.L199:
+	ret
+.L128:
+	
+__uip_fw_init_function_end:
+	.size	uip_fw_init,__uip_fw_init_function_end-uip_fw_init
+.L76:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.ipaddr_maskcmp',code,cluster('ipaddr_maskcmp')
+	.sect	'.text.uip-fw.ipaddr_maskcmp'
+	.align	2
+	
+; Function ipaddr_maskcmp
+.L51:
+ipaddr_maskcmp:	.type	func
+	mov	d2,#0
+.L325:
+	ld.hu	d15,[a4]0
+.L326:
+	ld.hu	d0,[a6]0
+.L327:
+	and	d15,d0
+.L328:
+	ld.hu	d0,[a5]0
+.L329:
+	ld.hu	d1,[a6]0
+.L330:
+	and	d0,d1
+.L331:
+	jne	d15,d0,.L4
+.L332:
+	ld.hu	d15,[a4]2
+.L333:
+	ld.hu	d0,[a6]2
+.L334:
+	and	d15,d0
+.L335:
+	ld.hu	d0,[a5]2
+.L336:
+	ld.hu	d1,[a6]2
+.L337:
+	and	d0,d1
+.L338:
+	jne	d15,d0,.L5
+.L339:
+	mov	d2,#1
+.L5:
+.L4:
+	j	.L6
+.L6:
+	ret
+.L143:
+	
+__ipaddr_maskcmp_function_end:
+	.size	ipaddr_maskcmp,__ipaddr_maskcmp_function_end-ipaddr_maskcmp
+.L106:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.time_exceeded',code,cluster('time_exceeded')
+	.sect	'.text.uip-fw.time_exceeded'
+	.align	2
+	
+; Function time_exceeded
+.L53:
+time_exceeded:	.type	func
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L344:
+	ld.bu	d15,[a15]23
+.L345:
+	jne	d15,#1,.L7
+.L346:
+	movh.a	a15,#@his(uip_len)
+	lea	a15,[a15]@los(uip_len)
+.L347:
+	mov	d15,#0
+.L348:
+	st.h	[a15],d15
+.L349:
+	j	.L8
+.L7:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L350:
+	lea	a4,[a15]42
+.L351:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+	lea	a5,[a15]14
+.L352:
+	mov	d4,#28
+	call	memcpy
+.L353:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L354:
+	mov	d15,#11
+.L355:
+	st.b	[a15]34,d15
+.L356:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L357:
+	mov	d15,#0
+.L358:
+	st.b	[a15]35,d15
+.L359:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L360:
+	mov	d15,#0
+.L361:
+	st.h	[a15]36,d15
+.L362:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L363:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L364:
+	lea	a4,[a2]34
+.L365:
+	mov	d4,#36
+	call	uip_chksum
+.L366:
+	mov	d15,#-1
+	xor	d2,d15
+.L367:
+	st.h	[a15]36,d2
+.L368:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L369:
+	ld.hu	d15,[a15]30
+.L160:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L370:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L371:
+	ld.hu	d0,[a2]26
+.L372:
+	st.h	[a15]30,d0
+.L373:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L374:
+	st.h	[a15]26,d15
+.L375:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L376:
+	ld.hu	d15,[a15]32
+.L377:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L378:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L379:
+	ld.hu	d0,[a2]28
+.L380:
+	st.h	[a15]32,d0
+.L381:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L382:
+	st.h	[a15]28,d15
+.L383:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L384:
+	movh.a	a2,#@his(uip_hostaddr)
+	lea	a2,[a2]@los(uip_hostaddr)
+.L385:
+	ld.hu	d15,[a2]0
+.L161:
+	st.h	[a15]26,d15
+.L386:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L387:
+	movh.a	a2,#@his(uip_hostaddr)
+	lea	a2,[a2]@los(uip_hostaddr)
+.L388:
+	ld.hu	d15,[a2]2
+.L389:
+	st.h	[a15]28,d15
+.L390:
+	movh.a	a15,#@his(uip_len)
+	lea	a15,[a15]@los(uip_len)
+.L391:
+	mov	d15,#56
+.L392:
+	st.h	[a15],d15
+.L393:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L394:
+	mov	d15,#0
+.L395:
+	st.b	[a15]16,d15
+.L396:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L397:
+	mov	d15,#56
+.L398:
+	st.b	[a15]17,d15
+.L399:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L400:
+	mov	d15,#69
+.L401:
+	st.b	[a15]14,d15
+.L402:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L403:
+	mov	d15,#0
+.L404:
+	st.b	[a15]15,d15
+.L405:
+	mov	d15,#0
+.L406:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L407:
+	st.b	[a15]21,d15
+.L408:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L409:
+	st.b	[a15]20,d15
+.L410:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L411:
+	mov	d15,#64
+.L412:
+	st.b	[a15]22,d15
+.L413:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L414:
+	mov	d15,#1
+.L415:
+	st.b	[a15]23,d15
+.L416:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L417:
+	mov	d15,#0
+.L418:
+	st.h	[a15]24,d15
+.L419:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L420:
+	call	uip_ipchksum
+.L421:
+	mov	d15,#-1
+	xor	d2,d15
+.L422:
+	st.h	[a15]24,d2
+.L8:
+	ret
+.L148:
+	
+__time_exceeded_function_end:
+	.size	time_exceeded,__time_exceeded_function_end-time_exceeded
+.L111:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.fwcache_register',code,cluster('fwcache_register')
+	.sect	'.text.uip-fw.fwcache_register'
+	.align	2
+	
+; Function fwcache_register
+.L55:
+fwcache_register:	.type	func
+	mov	d0,#20
+.L162:
+	mov.a	a15,#0
+.L163:
+	mov	d1,#0
+.L165:
+	j	.L9
+.L10:
+	mul	d15,d1,#16
+.L427:
+	movh.a	a2,#@his(fwcache)
+	lea	a2,[a2]@los(fwcache)
+.L428:
+	addsc.a	a2,a2,d15,#0
+.L429:
+	ld.hu	d15,[a2]0
+.L430:
+	jne	d15,#0,.L11
+.L431:
+	mul	d15,d1,#16
+.L432:
+	movh.a	a15,#@his(fwcache)
+.L164:
+	lea	a15,[a15]@los(fwcache)
+.L433:
+	addsc.a	a15,a15,d15,#0
+.L166:
+	j	.L12
+.L11:
+	mul	d15,d1,#16
+.L434:
+	movh.a	a2,#@his(fwcache)
+	lea	a2,[a2]@los(fwcache)
+.L435:
+	addsc.a	a2,a2,d15,#0
+.L436:
+	ld.hu	d15,[a2]0
+.L437:
+	jlt	d0,d15,.L13
+.L438:
+	mul	d15,d1,#16
+.L439:
+	movh.a	a15,#@his(fwcache)
+.L167:
+	lea	a15,[a15]@los(fwcache)
+.L440:
+	addsc.a	a15,a15,d15,#0
+.L168:
+	mul	d15,d1,#16
+.L441:
+	movh.a	a2,#@his(fwcache)
+	lea	a2,[a2]@los(fwcache)
+.L442:
+	addsc.a	a2,a2,d15,#0
+.L443:
+	ld.hu	d0,[a2]0
+.L13:
+	add	d1,#1
+.L9:
+	jlt	d1,#2,.L10
+.L12:
+	mov	d15,#20
+.L444:
+	st.h	[a15],d15
+.L445:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L446:
+	ld.hu	d15,[a2]18
+.L447:
+	st.h	[a15]10,d15
+.L448:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L449:
+	ld.hu	d15,[a2]26
+.L450:
+	st.h	[a15]2,d15
+.L451:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L452:
+	ld.hu	d15,[a2]28
+.L453:
+	st.h	[a15]4,d15
+.L454:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L455:
+	ld.hu	d15,[a2]30
+.L456:
+	st.h	[a15]6,d15
+.L457:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L458:
+	ld.hu	d15,[a2]32
+.L459:
+	st.h	[a15]8,d15
+.L460:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L461:
+	ld.bu	d15,[a2]23
+.L462:
+	st.b	[a15]12,d15
+.L463:
+	ret
+.L151:
+	
+__fwcache_register_function_end:
+	.size	fwcache_register,__fwcache_register_function_end-fwcache_register
+.L116:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.find_netif',code,cluster('find_netif')
+	.sect	'.text.uip-fw.find_netif'
+	.align	2
+	
+; Function find_netif
+.L57:
+find_netif:	.type	func
+	movh.a	a15,#@his(netifs)
+	lea	a15,[a15]@los(netifs)
+	ld.a	a15,[a15]
+.L169:
+	j	.L14
+.L15:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L468:
+	lea	a4,[a2]30
+.L469:
+	mov.aa	a5,a15
+.L171:
+	add.a	a5,#4
+.L470:
+	lea	a6,[a15]8
+.L170:
+	call	ipaddr_maskcmp
+.L172:
+	jeq	d2,#0,.L16
+.L173:
+	mov.aa	a2,a15
+.L174:
+	j	.L17
+.L16:
+	ld.a	a15,[a15]
+.L14:
+	jnz.a	a15,.L15
+.L471:
+	movh.a	a15,#@his(defaultnetif)
+.L175:
+	lea	a15,[a15]@los(defaultnetif)
+	ld.a	a2,[a15]
+.L472:
+	j	.L18
+.L18:
+.L17:
+	ret
+.L156:
+	
+__find_netif_function_end:
+	.size	find_netif,__find_netif_function_end-find_netif
+.L121:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.uip_fw_output',code,cluster('uip_fw_output')
+	.sect	'.text.uip-fw.uip_fw_output'
+	.align	2
+	
+	.global	uip_fw_output
+; Function uip_fw_output
+.L59:
+uip_fw_output:	.type	func
+	movh.a	a15,#@his(uip_len)
+	lea	a15,[a15]@los(uip_len)
+	ld.hu	d15,[a15]0
+.L289:
+	jne	d15,#0,.L19
+.L290:
+	mov	d2,#2
+.L291:
+	j	.L20
+.L19:
+	call	fwcache_register
+.L292:
+	call	find_netif
+.L176:
+	jnz.a	a2,.L21
+.L177:
+	mov	d2,#4
+.L293:
+	j	.L22
+.L21:
+	ld.a	a15,[a2]12
+.L178:
+	calli	a15
+.L294:
+	j	.L23
+.L23:
+.L22:
+.L20:
+	ret
+.L135:
+	
+__uip_fw_output_function_end:
+	.size	uip_fw_output,__uip_fw_output_function_end-uip_fw_output
+.L86:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.uip_fw_forward',code,cluster('uip_fw_forward')
+	.sect	'.text.uip-fw.uip_fw_forward'
+	.align	2
+	
+	.global	uip_fw_forward
+; Function uip_fw_forward
+.L61:
+uip_fw_forward:	.type	func
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L204:
+	ld.hu	d15,[a15]30
+.L205:
+	movh.a	a15,#@his(uip_hostaddr)
+	lea	a15,[a15]@los(uip_hostaddr)
+.L206:
+	ld.hu	d0,[a15]0
+.L207:
+	jne	d15,d0,.L24
+.L208:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L209:
+	ld.hu	d15,[a15]32
+.L210:
+	movh.a	a15,#@his(uip_hostaddr)
+	lea	a15,[a15]@los(uip_hostaddr)
+.L211:
+	ld.hu	d0,[a15]2
+.L212:
+	jne	d15,d0,.L25
+.L213:
+	mov	d2,#0
+.L214:
+	j	.L26
+.L25:
+.L24:
+	movh.a	a15,#@his(fwcache)
+.L179:
+	lea	a15,[a15]@los(fwcache)
+.L215:
+	j	.L27
+.L28:
+	ld.hu	d15,[a15]0
+.L216:
+	jeq	d15,#0,.L29
+.L217:
+	ld.hu	d15,[a15]10
+.L218:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L219:
+	ld.hu	d0,[a2]18
+.L220:
+	jne	d15,d0,.L30
+.L221:
+	ld.hu	d15,[a15]2
+.L222:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L223:
+	ld.hu	d0,[a2]26
+.L224:
+	jne	d15,d0,.L31
+.L225:
+	ld.hu	d15,[a15]4
+.L226:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L227:
+	ld.hu	d0,[a2]28
+.L228:
+	jne	d15,d0,.L32
+.L229:
+	ld.hu	d15,[a15]6
+.L230:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L231:
+	ld.hu	d0,[a2]30
+.L232:
+	jne	d15,d0,.L33
+.L233:
+	ld.hu	d15,[a15]8
+.L234:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L235:
+	ld.hu	d0,[a2]32
+.L236:
+	jne	d15,d0,.L34
+.L237:
+	ld.bu	d15,[a15]12
+.L238:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L239:
+	ld.bu	d0,[a2]23
+.L240:
+	jne	d15,d0,.L35
+.L241:
+	mov	d2,#1
+.L242:
+	j	.L36
+.L35:
+.L34:
+.L33:
+.L32:
+.L31:
+.L30:
+.L29:
+	lea	a15,[a15]16
+.L27:
+	movh.a	a2,#@his(fwcache)
+	lea	a2,[a2]@los(fwcache)
+.L243:
+	lea	a2,[a2]32
+.L244:
+	lt.a	d15,a15,a2
+.L245:
+	jne	d15,#0,.L28
+.L246:
+	movh.a	a15,#@his(uip_buf)
+.L180:
+	lea	a15,[a15]@los(uip_buf)
+.L247:
+	ld.bu	d15,[a15]22
+.L248:
+	jge.u	d15,#2,.L37
+.L249:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L250:
+	ld.hu	d15,[a15]30
+.L251:
+	mov.u	d0,#65535
+.L252:
+	jne	d15,d0,.L38
+.L253:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L254:
+	ld.hu	d15,[a15]32
+.L255:
+	mov.u	d0,#65535
+.L256:
+	jne	d15,d0,.L39
+.L257:
+	mov	d2,#0
+.L258:
+	j	.L40
+.L39:
+.L38:
+	call	time_exceeded
+.L37:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L259:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L260:
+	ld.bu	d15,[a2]22
+.L261:
+	add	d15,#-1
+.L262:
+	st.b	[a15]22,d15
+.L263:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L264:
+	ld.hu	d15,[a15]24
+.L265:
+	mov.u	d0,#65534
+.L266:
+	jlt.u	d15,d0,.L41
+.L267:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L268:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L269:
+	ld.hu	d15,[a2]24
+.L270:
+	add	d15,#1
+.L271:
+	add	d15,#1
+.L272:
+	st.h	[a15]24,d15
+.L273:
+	j	.L42
+.L41:
+	movh.a	a15,#@his(uip_buf)
+	lea	a15,[a15]@los(uip_buf)
+.L274:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L275:
+	ld.hu	d15,[a2]24
+.L276:
+	add	d15,#1
+.L277:
+	st.h	[a15]24,d15
+.L42:
+	movh.a	a15,#@his(uip_len)
+	lea	a15,[a15]@los(uip_len)
+	ld.hu	d15,[a15]0
+.L278:
+	jlt.u	d15,#1,.L43
+.L279:
+	movh.a	a15,#@his(uip_appdata)
+	lea	a15,[a15]@los(uip_appdata)
+.L280:
+	movh.a	a2,#@his(uip_buf)
+	lea	a2,[a2]@los(uip_buf)
+.L281:
+	lea	a2,[a2]54
+.L282:
+	st.a	[a15],a2
+.L283:
+	call	uip_fw_output
+.L43:
+	mov	d2,#1
+.L284:
+	j	.L44
+.L44:
+.L40:
+.L36:
+.L26:
+	ret
+.L132:
+	
+__uip_fw_forward_function_end:
+	.size	uip_fw_forward,__uip_fw_forward_function_end-uip_fw_forward
+.L81:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.uip_fw_register',code,cluster('uip_fw_register')
+	.sect	'.text.uip-fw.uip_fw_register'
+	.align	2
+	
+	.global	uip_fw_register
+; Function uip_fw_register
+.L63:
+uip_fw_register:	.type	func
+	movh.a	a15,#@his(netifs)
+	lea	a15,[a15]@los(netifs)
+	ld.a	a15,[a15]
+.L299:
+	st.a	[a4],a15
+.L300:
+	movh.a	a15,#@his(netifs)
+	lea	a15,[a15]@los(netifs)
+.L301:
+	st.a	[a15],a4
+.L302:
+	ret
+.L137:
+	
+__uip_fw_register_function_end:
+	.size	uip_fw_register,__uip_fw_register_function_end-uip_fw_register
+.L91:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.uip_fw_default',code,cluster('uip_fw_default')
+	.sect	'.text.uip-fw.uip_fw_default'
+	.align	2
+	
+	.global	uip_fw_default
+; Function uip_fw_default
+.L65:
+uip_fw_default:	.type	func
+	movh.a	a15,#@his(defaultnetif)
+	lea	a15,[a15]@los(defaultnetif)
+.L307:
+	st.a	[a15],a4
+.L308:
+	ret
+.L139:
+	
+__uip_fw_default_function_end:
+	.size	uip_fw_default,__uip_fw_default_function_end-uip_fw_default
+.L96:
+	; End of function
+	
+	.sdecl	'.text.uip-fw.uip_fw_periodic',code,cluster('uip_fw_periodic')
+	.sect	'.text.uip-fw.uip_fw_periodic'
+	.align	2
+	
+	.global	uip_fw_periodic
+; Function uip_fw_periodic
+.L67:
+uip_fw_periodic:	.type	func
+	movh.a	a15,#@his(fwcache)
+.L181:
+	lea	a15,[a15]@los(fwcache)
+.L313:
+	j	.L45
+.L46:
+	ld.hu	d15,[a15]0
+.L314:
+	jlt.u	d15,#1,.L47
+.L315:
+	ld.hu	d15,[a15]0
+.L316:
+	add	d15,#-1
+	st.h	[a15],d15
+.L47:
+	lea	a15,[a15]16
+.L45:
+	movh.a	a2,#@his(fwcache)
+	lea	a2,[a2]@los(fwcache)
+.L317:
+	lea	a2,[a2]32
+.L318:
+	lt.a	d15,a15,a2
+.L319:
+	jne	d15,#0,.L46
+.L320:
+	ret
+.L141:
+	
+__uip_fw_periodic_function_end:
+	.size	uip_fw_periodic,__uip_fw_periodic_function_end-uip_fw_periodic
+.L101:
+	; End of function
+	
+	.sdecl	'.data.uip-fw.netifs',data,cluster('netifs')
+	.sect	'.data.uip-fw.netifs'
+	.align	4
+netifs:	.type	object
+	.size	netifs,4
+	.space	4
+	.sdecl	'.data.uip-fw.defaultnetif',data,cluster('defaultnetif')
+	.sect	'.data.uip-fw.defaultnetif'
+	.align	4
+defaultnetif:	.type	object
+	.size	defaultnetif,4
+	.space	4
+	.sdecl	'.bss.uip-fw.fwcache',data,cluster('fwcache')
+	.sect	'.bss.uip-fw.fwcache'
+	.align	4
+fwcache:	.type	object
+	.size	fwcache,32
+	.space	32
+	.calls	'time_exceeded','memcpy'
+	.calls	'time_exceeded','uip_chksum'
+	.calls	'time_exceeded','uip_ipchksum'
+	.calls	'find_netif','ipaddr_maskcmp'
+	.calls	'uip_fw_output','fwcache_register'
+	.calls	'uip_fw_output','find_netif'
+	.calls	'uip_fw_output','__INDIRECT__'
+	.calls	'uip_fw_forward','time_exceeded'
+	.calls	'uip_fw_forward','uip_fw_output'
+	.calls	'uip_fw_init','',0
+	.calls	'ipaddr_maskcmp','',0
+	.calls	'time_exceeded','',0
+	.calls	'fwcache_register','',0
+	.calls	'find_netif','',0
+	.calls	'uip_fw_output','',0
+	.calls	'uip_fw_forward','',0
+	.calls	'uip_fw_register','',0
+	.calls	'uip_fw_default','',0
+	.extern	memcpy
+	.extern	uip_buf
+	.extern	uip_appdata
+	.extern	uip_len
+	.extern	uip_hostaddr
+	.extern	uip_chksum
+	.extern	uip_ipchksum
+	.extern	__INDIRECT__
+	.calls	'uip_fw_periodic','',0
+	.sdecl	'.debug_info',debug
+	.sect	'.debug_info'
+.L69:
+	.word	1715
+	.half	3
+	.word	.L70
+	.byte	4
+.L68:
+	.byte	1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L71
+	.byte	2
+	.byte	'void',0,3
+	.word	187
+	.byte	4
+	.word	193
+	.byte	5
+	.word	187
+	.byte	3
+	.word	203
+	.byte	4
+	.word	208
+	.byte	6
+	.byte	'unsigned int',0,4,7,7
+	.byte	'memcpy',0,1,53,17
+	.word	193
+	.byte	1,1,1,1,8,1,53,33
+	.word	198
+	.byte	8,1,53,56
+	.word	213
+	.byte	8,1,53,68
+	.word	218
+	.byte	0
+.L149:
+	.byte	6
+	.byte	'unsigned short int',0,2,7
+.L144:
+	.byte	3
+	.word	278
+	.byte	7
+	.byte	'uip_chksum',0,2,105,7
+	.word	278
+	.byte	1,1,1,1,9
+	.byte	'buf',0,2,105,25
+	.word	300
+	.byte	9
+	.byte	'len',0,2,105,36
+	.word	278
+	.byte	0,10
+	.byte	'uip_ipchksum',0,2,116,7
+	.word	278
+	.byte	1,1,1,1,11,4
+	.word	278
+	.byte	12,1,0
+.L131:
+	.byte	6
+	.byte	'unsigned char',0,1,8,13
+	.word	387
+	.byte	1,1,3
+	.word	404
+	.byte	14
+	.byte	'uip_fw_netif',0,3,54,8,16,15
+	.byte	'next',0
+	.word	.L129-.L69
+	.byte	4,2,35,0,15
+	.byte	'ipaddr',0
+	.word	378
+	.byte	4,2,35,4,15
+	.byte	'netmask',0
+	.word	378
+	.byte	4,2,35,8,15
+	.byte	'output',0
+	.word	411
+	.byte	4,2,35,12,0
+.L129:
+	.byte	3
+	.word	416
+	.byte	14
+	.byte	'fwcache_entry',0,4,151,1,8,16,15
+	.byte	'timer',0
+	.word	278
+	.byte	2,2,35,0,15
+	.byte	'srcipaddr',0
+	.word	378
+	.byte	4,2,35,2,15
+	.byte	'destipaddr',0
+	.word	378
+	.byte	4,2,35,6,15
+	.byte	'ipid',0
+	.word	278
+	.byte	2,2,35,10,15
+	.byte	'proto',0
+	.word	387
+	.byte	1,2,35,12,15
+	.byte	'unused',0
+	.word	387
+	.byte	1,2,35,13,0
+.L133:
+	.byte	3
+	.word	503
+.L153:
+	.byte	6
+	.byte	'int',0,4,5,16
+	.byte	'__INDIRECT__',0,4,1,1,1,1,1,17
+	.byte	'__size_t',0,4,1,1
+	.word	218
+	.byte	18,1,3
+	.word	672
+	.byte	17
+	.byte	'__codeptr',0,4,1,1
+	.word	674
+	.byte	17
+	.byte	'__intptr_t',0,4,1,1
+	.word	628
+	.byte	17
+	.byte	'__uintptr_t',0,4,1,1
+	.word	218
+	.byte	17
+	.byte	'u8_t',0,5,66,23
+	.word	387
+	.byte	17
+	.byte	'u16_t',0,5,75,24
+	.word	278
+	.byte	17
+	.byte	'uip_stats_t',0,5,85,24
+	.word	278
+	.byte	17
+	.byte	'uint8_t',0,6,242,1,41
+	.word	387
+	.byte	17
+	.byte	'uint16_t',0,6,246,1,41
+	.word	278
+	.byte	17
+	.byte	'uint32_t',0,6,254,1,41
+	.word	218
+	.byte	17
+	.byte	'size_t',0,1,29,25
+	.word	218
+	.byte	17
+	.byte	'boot_bool',0,7,20,25
+	.word	387
+	.byte	17
+	.byte	'boot_int8u',0,7,23,25
+	.word	387
+	.byte	17
+	.byte	'boot_int16u',0,7,25,25
+	.word	278
+	.byte	17
+	.byte	'boot_int32u',0,7,27,25
+	.word	218
+	.byte	6
+	.byte	'char',0,1,6,11,24
+	.word	928
+	.byte	12,23,0,19,7,62,9,48,15
+	.byte	'image_magic',0
+	.word	218
+	.byte	4,2,35,0,15
+	.byte	'reserved_for_magic',0
+	.word	218
+	.byte	4,2,35,4,15
+	.byte	'image_version',0
+	.word	936
+	.byte	24,2,35,8,15
+	.byte	'image_base',0
+	.word	218
+	.byte	4,2,35,32,15
+	.byte	'image_size',0
+	.word	218
+	.byte	4,2,35,36,15
+	.byte	'image_crc',0
+	.word	218
+	.byte	4,2,35,40,15
+	.byte	'reserved',0
+	.word	218
+	.byte	4,2,35,44,0,17
+	.byte	'bcb_image_info_t',0,7,71,2
+	.word	945
+	.byte	11,141,4
+	.word	387
+	.byte	12,140,4,0,19,8,9,9,148,4,15
+	.byte	'ctoData',0
+	.word	1125
+	.byte	141,4,2,35,0,15
+	.byte	'connected',0
+	.word	387
+	.byte	1,3,35,141,4,15
+	.byte	'protection',0
+	.word	387
+	.byte	1,3,35,142,4,15
+	.byte	's_n_k_resource',0
+	.word	387
+	.byte	1,3,35,143,4,15
+	.byte	'ctoPending',0
+	.word	387
+	.byte	1,3,35,144,4,15
+	.byte	'ctoLen',0
+	.word	278
+	.byte	2,3,35,146,4,0,17
+	.byte	'transceiver_info_t',0,8,18,2
+	.word	1136
+	.byte	11,141,4
+	.word	387
+	.byte	12,140,4,0,11,154,8
+	.word	387
+	.byte	12,153,8,0,14
+	.byte	'net_state',0,9,51,16,220,20,15
+	.byte	'dto_counter',0
+	.word	218
+	.byte	4,2,35,0,15
+	.byte	'dto_data',0
+	.word	1292
+	.byte	141,4,2,35,4,15
+	.byte	'dto_len',0
+	.word	278
+	.byte	2,3,35,146,4,15
+	.byte	'dto_tx_req',0
+	.word	387
+	.byte	1,3,35,148,4,15
+	.byte	'dto_tx_pending',0
+	.word	387
+	.byte	1,3,35,149,4,15
+	.byte	'receiveInfo',0
+	.word	1136
+	.byte	148,4,3,35,152,4,15
+	.byte	'transmitInfo',0
+	.word	1136
+	.byte	148,4,3,35,172,8,15
+	.byte	'rx_accum',0
+	.word	1303
+	.byte	154,8,3,35,192,12,15
+	.byte	'rx_accum_len',0
+	.word	278
+	.byte	2,3,35,218,20,0,17
+	.byte	'uip_tcp_appstate_t',0,8,52,26
+	.word	1314
+	.byte	17
+	.byte	'uip_ip4addr_t',0,10,62,15
+	.word	378
+	.byte	17
+	.byte	'uip_ipaddr_t',0,10,67,23
+	.word	1552
+	.byte	11,4
+	.word	278
+	.byte	12,1,0,11,242,11
+	.word	387
+	.byte	12,241,11,0,20
+	.byte	'uip_buf',0,10,169,3,13
+	.word	1604
+	.byte	1,1,20
+	.byte	'uip_appdata',0,10,207,8,14
+	.word	193
+	.byte	1,1,20
+	.byte	'uip_len',0,10,242,8,14
+	.word	278
+	.byte	1,1,20
+	.byte	'uip_hostaddr',0,10,146,12,21
+	.word	1574
+	.byte	1,1,11,4
+	.word	278
+	.byte	12,1,0
+.L158:
+	.byte	11,32
+	.word	503
+	.byte	12,1,0,0
+	.sdecl	'.debug_abbrev',debug
+	.sect	'.debug_abbrev'
+.L70:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,59,0,3,8,0,0,3,15,0,73,19,0,0,4,55,0,73,19,0,0,5,38,0
+	.byte	73,19,0,0,6,36,0,3,8,11,15,62,15,0,0,7,46,1,3,8,58,15,59,15,57,15,73,19,54,15,39,12,63,12,60,12,0,0,8
+	.byte	5,0,58,15,59,15,57,15,73,19,0,0,9,5,0,3,8,58,15,59,15,57,15,73,19,0,0,10,46,0,3,8,58,15,59,15,57,15,73
+	.byte	19,54,15,39,12,63,12,60,12,0,0,11,1,1,11,15,73,19,0,0,12,33,0,47,15,0,0,13,21,0,73,19,54,15,39,12,0,0
+	.byte	14,19,1,3,8,58,15,59,15,57,15,11,15,0,0,15,13,0,3,8,73,19,11,15,56,9,0,0,16,46,0,3,8,58,15,59,15,57,15
+	.byte	54,15,63,12,60,12,0,0,17,22,0,3,8,58,15,59,15,57,15,73,19,0,0,18,21,0,54,15,0,0,19,19,1,58,15,59,15,57
+	.byte	15,11,15,0,0,20,52,0,3,8,58,15,59,15,57,15,73,19,63,12,60,12,0,0,0
+	.sdecl	'.debug_line',debug
+	.sect	'.debug_line'
+.L71:
+	.word	.L183-.L182
+.L182:
+	.half	3
+	.word	.L185-.L184
+.L184:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.byte	'C:\\Infineon\\AURIX-Studio-1.9.4\\plugins\\com.infineon.aurix.tools_1.9.4\\build_system\\tools\\Compilers\\Tasking_1.1r8\\ctc\\include\\',0
+	.byte	'D:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app',0
+	.byte	'D:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head',0,0
+	.byte	'string.h',0,1,0,0
+	.byte	'..\\uip\\core\\uip\\uip_arch.h',0,0,0,0
+	.byte	'..\\uip\\core\\uip\\uip-fw.h',0,0,0,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0
+	.byte	'uip-conf.h',0,2,0,0
+	.byte	'stdint.h',0,1,0,0
+	.byte	'boot_types.h',0,3,0,0
+	.byte	'boot_transport.h',0,3,0,0
+	.byte	'net.h',0,2,0,0
+	.byte	'..\\uip\\core\\uip\\uip.h',0,0,0,0,0
+.L185:
+.L183:
+	.sdecl	'.debug_info',debug,cluster('uip_fw_init')
+	.sect	'.debug_info'
+.L72:
+	.word	251
+	.half	3
+	.word	.L73
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L75,.L74
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_init',0,1,198,1,1,1,1,1
+	.word	.L49,.L128,.L48
+	.byte	4
+	.word	.L49,.L128
+	.byte	5
+	.byte	't',0,1,200,1,24
+	.word	.L129,.L130
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_init')
+	.sect	'.debug_abbrev'
+.L73:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_init')
+	.sect	'.debug_line'
+.L74:
+	.word	.L187-.L186
+.L186:
+	.half	3
+	.word	.L189-.L188
+.L188:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L189:
+	.byte	5,3,7,0,5,2
+	.word	.L49
+	.byte	3,200,1,1,5,18,9
+	.half	.L190-.L49
+	.byte	1,5,16,9
+	.half	.L191-.L190
+	.byte	1,5,24,9
+	.half	.L192-.L191
+	.byte	3,1,1,5,9,9
+	.half	.L3-.L192
+	.byte	3,2,1,5,5,9
+	.half	.L159-.L3
+	.byte	3,1,1,5,14,9
+	.half	.L193-.L159
+	.byte	1,5,20,9
+	.half	.L194-.L193
+	.byte	1,5,12,9
+	.half	.L195-.L194
+	.byte	1,5,15,9
+	.half	.L196-.L195
+	.byte	3,1,1,5,13,9
+	.half	.L197-.L196
+	.byte	1,5,10,9
+	.half	.L2-.L197
+	.byte	3,124,1,5,24,9
+	.half	.L198-.L2
+	.byte	1,5,1,7,9
+	.half	.L199-.L198
+	.byte	3,6,1,7,9
+	.half	.L76-.L199
+	.byte	0,1,1
+.L187:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_init')
+	.sect	'.debug_ranges'
+.L75:
+	.word	-1,.L49,0,.L76-.L49,0,0
+	.sdecl	'.debug_info',debug,cluster('uip_fw_forward')
+	.sect	'.debug_info'
+.L77:
+	.word	259
+	.half	3
+	.word	.L78
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L80,.L79
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_forward',0,1,178,3,1
+	.word	.L131
+	.byte	1,1,1
+	.word	.L61,.L132,.L60
+	.byte	4
+	.word	.L61,.L132
+	.byte	5
+	.byte	'fw',0,1,180,3,25
+	.word	.L133,.L134
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_forward')
+	.sect	'.debug_abbrev'
+.L78:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_forward')
+	.sect	'.debug_line'
+.L79:
+	.word	.L201-.L200
+.L200:
+	.half	3
+	.word	.L203-.L202
+.L202:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L203:
+	.byte	5,7,7,0,5,2
+	.word	.L61
+	.byte	3,183,3,1,5,22,9
+	.half	.L204-.L61
+	.byte	1,5,29,9
+	.half	.L205-.L204
+	.byte	1,5,41,9
+	.half	.L206-.L205
+	.byte	1,5,7,9
+	.half	.L207-.L206
+	.byte	1,7,9
+	.half	.L208-.L207
+	.byte	3,1,1,5,22,9
+	.half	.L209-.L208
+	.byte	1,5,29,9
+	.half	.L210-.L209
+	.byte	1,5,41,9
+	.half	.L211-.L210
+	.byte	1,5,26,9
+	.half	.L212-.L211
+	.byte	1,5,12,7,9
+	.half	.L213-.L212
+	.byte	3,2,1,5,5,9
+	.half	.L214-.L213
+	.byte	1,5,13,9
+	.half	.L24-.L214
+	.byte	3,17,1,5,49,9
+	.half	.L215-.L24
+	.byte	1,5,11,9
+	.half	.L28-.L215
+	.byte	3,2,1,5,9,9
+	.half	.L216-.L28
+	.byte	1,5,11,7,9
+	.half	.L217-.L216
+	.byte	3,5,1,5,21,9
+	.half	.L218-.L217
+	.byte	1,5,24,9
+	.half	.L219-.L218
+	.byte	1,5,18,9
+	.half	.L220-.L219
+	.byte	1,5,22,7,9
+	.half	.L221-.L220
+	.byte	3,1,1,5,29,9
+	.half	.L222-.L221
+	.byte	1,5,43,9
+	.half	.L223-.L222
+	.byte	1,5,26,9
+	.half	.L224-.L223
+	.byte	1,5,22,7,9
+	.half	.L225-.L224
+	.byte	3,1,1,5,29,9
+	.half	.L226-.L225
+	.byte	1,5,43,9
+	.half	.L227-.L226
+	.byte	1,5,26,9
+	.half	.L228-.L227
+	.byte	1,5,23,7,9
+	.half	.L229-.L228
+	.byte	3,1,1,5,30,9
+	.half	.L230-.L229
+	.byte	1,5,45,9
+	.half	.L231-.L230
+	.byte	1,5,27,9
+	.half	.L232-.L231
+	.byte	1,5,23,7,9
+	.half	.L233-.L232
+	.byte	3,1,1,5,30,9
+	.half	.L234-.L233
+	.byte	1,5,45,9
+	.half	.L235-.L234
+	.byte	1,5,27,9
+	.half	.L236-.L235
+	.byte	1,5,11,7,9
+	.half	.L237-.L236
+	.byte	3,5,1,5,22,9
+	.half	.L238-.L237
+	.byte	1,5,25,9
+	.half	.L239-.L238
+	.byte	1,5,19,9
+	.half	.L240-.L239
+	.byte	1,5,14,7,9
+	.half	.L241-.L240
+	.byte	3,3,1,5,7,9
+	.half	.L242-.L241
+	.byte	1,5,51,9
+	.half	.L29-.L242
+	.byte	3,109,1,5,28,9
+	.half	.L27-.L29
+	.byte	1,5,35,9
+	.half	.L243-.L27
+	.byte	1,5,25,9
+	.half	.L244-.L243
+	.byte	1,5,49,9
+	.half	.L245-.L244
+	.byte	1,5,7,7,9
+	.half	.L246-.L245
+	.byte	3,26,1,5,10,9
+	.half	.L247-.L246
+	.byte	1,5,3,9
+	.half	.L248-.L247
+	.byte	1,5,9,7,9
+	.half	.L249-.L248
+	.byte	3,3,1,5,24,9
+	.half	.L250-.L249
+	.byte	1,5,31,9
+	.half	.L251-.L250
+	.byte	1,5,9,9
+	.half	.L252-.L251
+	.byte	1,5,41,7,9
+	.half	.L253-.L252
+	.byte	1,5,56,9
+	.half	.L254-.L253
+	.byte	1,5,63,9
+	.half	.L255-.L254
+	.byte	1,5,60,9
+	.half	.L256-.L255
+	.byte	1,5,14,7,9
+	.half	.L257-.L256
+	.byte	3,2,1,5,7,9
+	.half	.L258-.L257
+	.byte	1,5,18,9
+	.half	.L38-.L258
+	.byte	3,2,1,5,3,9
+	.half	.L37-.L38
+	.byte	3,4,1,5,14,9
+	.half	.L259-.L37
+	.byte	1,5,17,9
+	.half	.L260-.L259
+	.byte	1,5,23,9
+	.half	.L261-.L260
+	.byte	1,5,12,9
+	.half	.L262-.L261
+	.byte	1,5,7,9
+	.half	.L263-.L262
+	.byte	3,3,1,5,10,9
+	.half	.L264-.L263
+	.byte	1,5,24,9
+	.half	.L265-.L264
+	.byte	1,5,3,9
+	.half	.L266-.L265
+	.byte	1,5,5,7,9
+	.half	.L267-.L266
+	.byte	3,2,1,5,21,9
+	.half	.L268-.L267
+	.byte	1,5,24,9
+	.half	.L269-.L268
+	.byte	1,5,35,9
+	.half	.L270-.L269
+	.byte	1,5,51,9
+	.half	.L271-.L270
+	.byte	1,5,19,9
+	.half	.L272-.L271
+	.byte	1,5,54,9
+	.half	.L273-.L272
+	.byte	1,5,5,9
+	.half	.L41-.L273
+	.byte	3,4,1,5,21,9
+	.half	.L274-.L41
+	.byte	1,5,24,9
+	.half	.L275-.L274
+	.byte	1,5,35,9
+	.half	.L276-.L275
+	.byte	1,5,19,9
+	.half	.L277-.L276
+	.byte	1,5,7,9
+	.half	.L42-.L277
+	.byte	3,3,1,5,3,9
+	.half	.L278-.L42
+	.byte	1,5,5,7,9
+	.half	.L279-.L278
+	.byte	3,2,1,5,20,9
+	.half	.L280-.L279
+	.byte	1,5,27,9
+	.half	.L281-.L280
+	.byte	1,5,17,9
+	.half	.L282-.L281
+	.byte	1,5,18,9
+	.half	.L283-.L282
+	.byte	3,1,1,5,10,9
+	.half	.L43-.L283
+	.byte	3,12,1,5,3,9
+	.half	.L284-.L43
+	.byte	1,5,1,9
+	.half	.L26-.L284
+	.byte	3,1,1,7,9
+	.half	.L81-.L26
+	.byte	0,1,1
+.L201:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_forward')
+	.sect	'.debug_ranges'
+.L80:
+	.word	-1,.L61,0,.L81-.L61,0,0
+	.sdecl	'.debug_info',debug,cluster('uip_fw_output')
+	.sect	'.debug_info'
+.L82:
+	.word	261
+	.half	3
+	.word	.L83
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L85,.L84
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_output',0,1,253,2,1
+	.word	.L131
+	.byte	1,1,1
+	.word	.L59,.L135,.L58
+	.byte	4
+	.word	.L59,.L135
+	.byte	5
+	.byte	'netif',0,1,255,2,24
+	.word	.L129,.L136
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_output')
+	.sect	'.debug_abbrev'
+.L83:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_output')
+	.sect	'.debug_line'
+.L84:
+	.word	.L286-.L285
+.L285:
+	.half	3
+	.word	.L288-.L287
+.L287:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L288:
+	.byte	5,7,7,0,5,2
+	.word	.L59
+	.byte	3,128,3,1,5,3,9
+	.half	.L289-.L59
+	.byte	1,5,12,7,9
+	.half	.L290-.L289
+	.byte	3,2,1,5,5,9
+	.half	.L291-.L290
+	.byte	1,5,19,9
+	.half	.L19-.L291
+	.byte	3,3,1,5,21,9
+	.half	.L292-.L19
+	.byte	3,20,1,5,3,9
+	.half	.L176-.L292
+	.byte	3,5,1,5,12,7,9
+	.half	.L177-.L176
+	.byte	3,2,1,5,5,9
+	.half	.L293-.L177
+	.byte	1,5,15,9
+	.half	.L21-.L293
+	.byte	3,4,1,5,23,9
+	.half	.L178-.L21
+	.byte	1,5,3,9
+	.half	.L294-.L178
+	.byte	1,5,1,9
+	.half	.L20-.L294
+	.byte	3,1,1,7,9
+	.half	.L86-.L20
+	.byte	0,1,1
+.L286:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_output')
+	.sect	'.debug_ranges'
+.L85:
+	.word	-1,.L59,0,.L86-.L59,0,0
+	.sdecl	'.debug_info',debug,cluster('uip_fw_register')
+	.sect	'.debug_info'
+.L87:
+	.word	258
+	.half	3
+	.word	.L88
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L90,.L89
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_register',0,1,151,4,1,1,1,1
+	.word	.L63,.L137,.L62
+	.byte	4
+	.byte	'netif',0,1,151,4,38
+	.word	.L129,.L138
+	.byte	5
+	.word	.L63,.L137
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_register')
+	.sect	'.debug_abbrev'
+.L88:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_register')
+	.sect	'.debug_line'
+.L89:
+	.word	.L296-.L295
+.L295:
+	.half	3
+	.word	.L298-.L297
+.L297:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L298:
+	.byte	5,17,7,0,5,2
+	.word	.L63
+	.byte	3,152,4,1,5,15,9
+	.half	.L299-.L63
+	.byte	1,5,3,9
+	.half	.L300-.L299
+	.byte	3,1,1,5,10,9
+	.half	.L301-.L300
+	.byte	1,5,1,9
+	.half	.L302-.L301
+	.byte	3,1,1,7,9
+	.half	.L91-.L302
+	.byte	0,1,1
+.L296:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_register')
+	.sect	'.debug_ranges'
+.L90:
+	.word	-1,.L63,0,.L91-.L63,0,0
+	.sdecl	'.debug_info',debug,cluster('uip_fw_default')
+	.sect	'.debug_info'
+.L92:
+	.word	257
+	.half	3
+	.word	.L93
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L95,.L94
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_default',0,1,168,4,1,1,1,1
+	.word	.L65,.L139,.L64
+	.byte	4
+	.byte	'netif',0,1,168,4,37
+	.word	.L129,.L140
+	.byte	5
+	.word	.L65,.L139
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_default')
+	.sect	'.debug_abbrev'
+.L93:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_default')
+	.sect	'.debug_line'
+.L94:
+	.word	.L304-.L303
+.L303:
+	.half	3
+	.word	.L306-.L305
+.L305:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L306:
+	.byte	5,3,7,0,5,2
+	.word	.L65
+	.byte	3,169,4,1,5,16,9
+	.half	.L307-.L65
+	.byte	1,5,1,9
+	.half	.L308-.L307
+	.byte	3,1,1,7,9
+	.half	.L96-.L308
+	.byte	0,1,1
+.L304:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_default')
+	.sect	'.debug_ranges'
+.L95:
+	.word	-1,.L65,0,.L96-.L65,0,0
+	.sdecl	'.debug_info',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_info'
+.L97:
+	.word	256
+	.half	3
+	.word	.L98
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L100,.L99
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'uip_fw_periodic',0,1,178,4,1,1,1,1
+	.word	.L67,.L141,.L66
+	.byte	4
+	.word	.L67,.L141
+	.byte	5
+	.byte	'fw',0,1,180,4,25
+	.word	.L133,.L142
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_abbrev'
+.L98:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_line'
+.L99:
+	.word	.L310-.L309
+.L309:
+	.half	3
+	.word	.L312-.L311
+.L311:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L312:
+	.byte	5,13,7,0,5,2
+	.word	.L67
+	.byte	3,180,4,1,5,49,9
+	.half	.L313-.L67
+	.byte	1,5,11,9
+	.half	.L46-.L313
+	.byte	3,2,1,5,5,9
+	.half	.L314-.L46
+	.byte	1,5,11,7,9
+	.half	.L315-.L314
+	.byte	3,2,1,5,7,9
+	.half	.L316-.L315
+	.byte	1,5,51,9
+	.half	.L47-.L316
+	.byte	3,124,1,5,28,9
+	.half	.L45-.L47
+	.byte	1,5,35,9
+	.half	.L317-.L45
+	.byte	1,5,25,9
+	.half	.L318-.L317
+	.byte	1,5,49,9
+	.half	.L319-.L318
+	.byte	1,5,1,7,9
+	.half	.L320-.L319
+	.byte	3,7,1,7,9
+	.half	.L101-.L320
+	.byte	0,1,1
+.L310:
+	.sdecl	'.debug_ranges',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_ranges'
+.L100:
+	.word	-1,.L67,0,.L101-.L67,0,0
+	.sdecl	'.debug_info',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_info'
+.L102:
+	.word	305
+	.half	3
+	.word	.L103
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L105,.L104
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'ipaddr_maskcmp',0,1,223,1,1
+	.word	.L131
+	.byte	1,1
+	.word	.L51,.L143,.L50
+	.byte	4
+	.byte	'ipaddr',0,1,223,1,23
+	.word	.L144,.L145
+	.byte	4
+	.byte	'netipaddr',0,1,223,1,38
+	.word	.L144,.L146
+	.byte	4
+	.byte	'netmask',0,1,223,1,56
+	.word	.L144,.L147
+	.byte	5
+	.word	.L51,.L143
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_abbrev'
+.L103:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_line'
+.L104:
+	.word	.L322-.L321
+.L321:
+	.half	3
+	.word	.L324-.L323
+.L323:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L324:
+	.byte	5,67,7,0,5,2
+	.word	.L51
+	.byte	3,224,1,1,5,17,9
+	.half	.L325-.L51
+	.byte	1,5,31,9
+	.half	.L326-.L325
+	.byte	1,5,21,9
+	.half	.L327-.L326
+	.byte	1,5,49,9
+	.half	.L328-.L327
+	.byte	1,5,62,9
+	.half	.L329-.L328
+	.byte	1,5,53,9
+	.half	.L330-.L329
+	.byte	1,5,10,9
+	.half	.L331-.L330
+	.byte	1,5,17,7,9
+	.half	.L332-.L331
+	.byte	3,1,1,5,30,9
+	.half	.L333-.L332
+	.byte	1,5,21,9
+	.half	.L334-.L333
+	.byte	1,5,48,9
+	.half	.L335-.L334
+	.byte	1,5,61,9
+	.half	.L336-.L335
+	.byte	1,5,52,9
+	.half	.L337-.L336
+	.byte	1,5,35,9
+	.half	.L338-.L337
+	.byte	1,5,67,7,9
+	.half	.L339-.L338
+	.byte	3,127,1,5,3,9
+	.half	.L4-.L339
+	.byte	1,5,1,9
+	.half	.L6-.L4
+	.byte	3,2,1,7,9
+	.half	.L106-.L6
+	.byte	0,1,1
+.L322:
+	.sdecl	'.debug_ranges',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_ranges'
+.L105:
+	.word	-1,.L51,0,.L106-.L51,0,0
+	.sdecl	'.debug_info',debug,cluster('time_exceeded')
+	.sect	'.debug_info'
+.L107:
+	.word	256
+	.half	3
+	.word	.L108
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L110,.L109
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'time_exceeded',0,1,238,1,1,1,1
+	.word	.L53,.L148,.L52
+	.byte	4
+	.word	.L53,.L148
+	.byte	5
+	.byte	'tmp16',0,1,240,1,9
+	.word	.L149,.L150
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('time_exceeded')
+	.sect	'.debug_abbrev'
+.L108:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('time_exceeded')
+	.sect	'.debug_line'
+.L109:
+	.word	.L341-.L340
+.L340:
+	.half	3
+	.word	.L343-.L342
+.L342:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L343:
+	.byte	5,7,7,0,5,2
+	.word	.L53
+	.byte	3,242,1,1,5,14,9
+	.half	.L344-.L53
+	.byte	1,5,3,9
+	.half	.L345-.L344
+	.byte	1,5,5,7,9
+	.half	.L346-.L345
+	.byte	3,2,1,5,15,9
+	.half	.L347-.L346
+	.byte	1,5,13,9
+	.half	.L348-.L347
+	.byte	1,5,5,9
+	.half	.L349-.L348
+	.byte	3,1,1,5,12,9
+	.half	.L7-.L349
+	.byte	3,3,1,5,19,9
+	.half	.L350-.L7
+	.byte	1,5,34,9
+	.half	.L351-.L350
+	.byte	1,5,43,9
+	.half	.L352-.L351
+	.byte	1,5,3,9
+	.half	.L353-.L352
+	.byte	3,3,1,5,19,9
+	.half	.L354-.L353
+	.byte	1,5,17,9
+	.half	.L355-.L354
+	.byte	1,5,3,9
+	.half	.L356-.L355
+	.byte	3,1,1,5,20,9
+	.half	.L357-.L356
+	.byte	1,5,18,9
+	.half	.L358-.L357
+	.byte	1,5,3,9
+	.half	.L359-.L358
+	.byte	3,3,1,5,25,9
+	.half	.L360-.L359
+	.byte	1,5,23,9
+	.half	.L361-.L360
+	.byte	1,5,3,9
+	.half	.L362-.L361
+	.byte	3,1,1,5,48,9
+	.half	.L363-.L362
+	.byte	1,5,55,9
+	.half	.L364-.L363
+	.byte	1,5,64,9
+	.half	.L365-.L364
+	.byte	1,5,25,9
+	.half	.L366-.L365
+	.byte	1,5,23,9
+	.half	.L367-.L366
+	.byte	1,5,10,9
+	.half	.L368-.L367
+	.byte	3,4,1,5,25,9
+	.half	.L369-.L368
+	.byte	1,5,3,9
+	.half	.L160-.L369
+	.byte	3,1,1,5,24,9
+	.half	.L370-.L160
+	.byte	1,5,38,9
+	.half	.L371-.L370
+	.byte	1,5,22,9
+	.half	.L372-.L371
+	.byte	1,5,3,9
+	.half	.L373-.L372
+	.byte	3,1,1,5,21,9
+	.half	.L374-.L373
+	.byte	1,5,11,9
+	.half	.L375-.L374
+	.byte	3,1,1,5,26,9
+	.half	.L376-.L375
+	.byte	1,5,3,9
+	.half	.L377-.L376
+	.byte	3,1,1,5,24,9
+	.half	.L378-.L377
+	.byte	1,5,38,9
+	.half	.L379-.L378
+	.byte	1,5,22,9
+	.half	.L380-.L379
+	.byte	1,5,3,9
+	.half	.L381-.L380
+	.byte	3,1,1,5,21,9
+	.half	.L382-.L381
+	.byte	1,5,3,9
+	.half	.L383-.L382
+	.byte	3,3,1,5,23,9
+	.half	.L384-.L383
+	.byte	1,5,35,9
+	.half	.L385-.L384
+	.byte	1,5,21,9
+	.half	.L161-.L385
+	.byte	1,5,3,9
+	.half	.L386-.L161
+	.byte	3,1,1,5,23,9
+	.half	.L387-.L386
+	.byte	1,5,35,9
+	.half	.L388-.L387
+	.byte	1,5,21,9
+	.half	.L389-.L388
+	.byte	1,5,3,9
+	.half	.L390-.L389
+	.byte	3,4,1,5,13,9
+	.half	.L391-.L390
+	.byte	1,5,11,9
+	.half	.L392-.L391
+	.byte	1,5,3,9
+	.half	.L393-.L392
+	.byte	3,1,1,5,21,9
+	.half	.L394-.L393
+	.byte	1,5,19,9
+	.half	.L395-.L394
+	.byte	1,5,3,9
+	.half	.L396-.L395
+	.byte	3,1,1,5,21,9
+	.half	.L397-.L396
+	.byte	1,5,19,9
+	.half	.L398-.L397
+	.byte	1,5,3,9
+	.half	.L399-.L398
+	.byte	3,3,1,5,18,9
+	.half	.L400-.L399
+	.byte	1,5,16,9
+	.half	.L401-.L400
+	.byte	1,5,3,9
+	.half	.L402-.L401
+	.byte	3,1,1,5,18,9
+	.half	.L403-.L402
+	.byte	1,5,16,9
+	.half	.L404-.L403
+	.byte	1,5,47,9
+	.half	.L405-.L404
+	.byte	3,1,1,5,26,9
+	.half	.L406-.L405
+	.byte	1,5,47,9
+	.half	.L407-.L406
+	.byte	1,5,3,9
+	.half	.L408-.L407
+	.byte	1,5,24,9
+	.half	.L409-.L408
+	.byte	1,5,3,9
+	.half	.L410-.L409
+	.byte	3,1,1,5,19,9
+	.half	.L411-.L410
+	.byte	1,5,17,9
+	.half	.L412-.L411
+	.byte	1,5,3,9
+	.half	.L413-.L412
+	.byte	3,1,1,5,20,9
+	.half	.L414-.L413
+	.byte	1,5,18,9
+	.half	.L415-.L414
+	.byte	1,5,3,9
+	.half	.L416-.L415
+	.byte	3,3,1,5,23,9
+	.half	.L417-.L416
+	.byte	1,5,21,9
+	.half	.L418-.L417
+	.byte	1,5,3,9
+	.half	.L419-.L418
+	.byte	3,1,1,5,37,9
+	.half	.L420-.L419
+	.byte	1,5,23,9
+	.half	.L421-.L420
+	.byte	1,5,21,9
+	.half	.L422-.L421
+	.byte	1,5,1,9
+	.half	.L8-.L422
+	.byte	3,3,1,7,9
+	.half	.L111-.L8
+	.byte	0,1,1
+.L341:
+	.sdecl	'.debug_ranges',debug,cluster('time_exceeded')
+	.sect	'.debug_ranges'
+.L110:
+	.word	-1,.L53,0,.L111-.L53,0,0
+	.sdecl	'.debug_info',debug,cluster('fwcache_register')
+	.sect	'.debug_info'
+.L112:
+	.word	291
+	.half	3
+	.word	.L113
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L115,.L114
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'fwcache_register',0,1,171,2,1,1,1
+	.word	.L55,.L151,.L54
+	.byte	4
+	.word	.L55,.L151
+	.byte	5
+	.byte	'fw',0,1,173,2,25
+	.word	.L133,.L152
+	.byte	5
+	.byte	'i',0,1,174,2,7
+	.word	.L153,.L154
+	.byte	5
+	.byte	'oldest',0,1,174,2,10
+	.word	.L153,.L155
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('fwcache_register')
+	.sect	'.debug_abbrev'
+.L113:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('fwcache_register')
+	.sect	'.debug_line'
+.L114:
+	.word	.L424-.L423
+.L423:
+	.half	3
+	.word	.L426-.L425
+.L425:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L426:
+	.byte	5,10,7,0,5,2
+	.word	.L55
+	.byte	3,175,2,1,5,6,9
+	.half	.L162-.L55
+	.byte	3,1,1,5,10,9
+	.half	.L163-.L162
+	.byte	3,3,1,5,31,9
+	.half	.L165-.L163
+	.byte	1,5,16,9
+	.half	.L10-.L165
+	.byte	3,2,1,5,9,9
+	.half	.L427-.L10
+	.byte	1,5,16,9
+	.half	.L428-.L427
+	.byte	1,5,19,9
+	.half	.L429-.L428
+	.byte	1,5,5,9
+	.half	.L430-.L429
+	.byte	1,5,20,7,9
+	.half	.L431-.L430
+	.byte	3,2,1,5,13,9
+	.half	.L432-.L431
+	.byte	1,5,20,9
+	.half	.L433-.L432
+	.byte	1,5,7,9
+	.half	.L166-.L433
+	.byte	3,1,1,5,21,9
+	.half	.L11-.L166
+	.byte	3,2,1,5,14,9
+	.half	.L434-.L11
+	.byte	1,5,21,9
+	.half	.L435-.L434
+	.byte	1,5,24,9
+	.half	.L436-.L435
+	.byte	1,5,10,9
+	.half	.L437-.L436
+	.byte	1,5,20,7,9
+	.half	.L438-.L437
+	.byte	3,2,1,5,13,9
+	.half	.L439-.L438
+	.byte	1,5,20,9
+	.half	.L440-.L439
+	.byte	1,5,23,9
+	.half	.L168-.L440
+	.byte	3,1,1,5,16,9
+	.half	.L441-.L168
+	.byte	1,5,23,9
+	.half	.L442-.L441
+	.byte	1,5,26,9
+	.half	.L443-.L442
+	.byte	1,5,33,9
+	.half	.L13-.L443
+	.byte	3,118,1,5,31,9
+	.half	.L9-.L13
+	.byte	1,5,15,7,9
+	.half	.L12-.L9
+	.byte	3,14,1,5,13,9
+	.half	.L444-.L12
+	.byte	1,5,14,9
+	.half	.L445-.L444
+	.byte	3,1,1,5,17,9
+	.half	.L446-.L445
+	.byte	1,5,12,9
+	.half	.L447-.L446
+	.byte	1,5,22,9
+	.half	.L448-.L447
+	.byte	3,1,1,5,36,9
+	.half	.L449-.L448
+	.byte	1,5,20,9
+	.half	.L450-.L449
+	.byte	1,5,22,9
+	.half	.L451-.L450
+	.byte	3,1,1,5,36,9
+	.half	.L452-.L451
+	.byte	1,5,20,9
+	.half	.L453-.L452
+	.byte	1,5,23,9
+	.half	.L454-.L453
+	.byte	3,1,1,5,38,9
+	.half	.L455-.L454
+	.byte	1,5,21,9
+	.half	.L456-.L455
+	.byte	1,5,23,9
+	.half	.L457-.L456
+	.byte	3,1,1,5,38,9
+	.half	.L458-.L457
+	.byte	1,5,21,9
+	.half	.L459-.L458
+	.byte	1,5,15,9
+	.half	.L460-.L459
+	.byte	3,1,1,5,18,9
+	.half	.L461-.L460
+	.byte	1,5,13,9
+	.half	.L462-.L461
+	.byte	1,5,1,9
+	.half	.L463-.L462
+	.byte	3,9,1,7,9
+	.half	.L116-.L463
+	.byte	0,1,1
+.L424:
+	.sdecl	'.debug_ranges',debug,cluster('fwcache_register')
+	.sect	'.debug_ranges'
+.L115:
+	.word	-1,.L55,0,.L116-.L55,0,0
+	.sdecl	'.debug_info',debug,cluster('find_netif')
+	.sect	'.debug_info'
+.L117:
+	.word	257
+	.half	3
+	.word	.L118
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L120,.L119
+	.byte	2
+	.word	.L68
+	.byte	3
+	.byte	'find_netif',0,1,217,2,1
+	.word	.L129
+	.byte	1,1
+	.word	.L57,.L156,.L56
+	.byte	4
+	.word	.L57,.L156
+	.byte	5
+	.byte	'netif',0,1,219,2,24
+	.word	.L129,.L157
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('find_netif')
+	.sect	'.debug_abbrev'
+.L118:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,17,1,18,1,64,6,0,0,4,11,1,17,1,18,1,0,0,5,52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('find_netif')
+	.sect	'.debug_line'
+.L119:
+	.word	.L465-.L464
+.L464:
+	.half	3
+	.word	.L467-.L466
+.L466:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip-fw.c',0,0,0,0,0
+.L467:
+	.byte	5,16,7,0,5,2
+	.word	.L57
+	.byte	3,221,2,1,5,37,9
+	.half	.L169-.L57
+	.byte	1,5,24,9
+	.half	.L15-.L169
+	.byte	3,2,1,5,27,9
+	.half	.L468-.L15
+	.byte	1,5,46,9
+	.half	.L469-.L468
+	.byte	1,5,29,9
+	.half	.L470-.L469
+	.byte	3,1,1,5,5,9
+	.half	.L172-.L470
+	.byte	3,127,1,5,7,7,9
+	.half	.L173-.L172
+	.byte	3,4,1,5,52,9
+	.half	.L16-.L173
+	.byte	3,122,1,5,37,9
+	.half	.L14-.L16
+	.byte	1,5,10,7,9
+	.half	.L471-.L14
+	.byte	3,11,1,5,3,9
+	.half	.L472-.L471
+	.byte	1,5,1,9
+	.half	.L17-.L472
+	.byte	3,1,1,7,9
+	.half	.L121-.L17
+	.byte	0,1,1
+.L465:
+	.sdecl	'.debug_ranges',debug,cluster('find_netif')
+	.sect	'.debug_ranges'
+.L120:
+	.word	-1,.L57,0,.L121-.L57,0,0
+	.sdecl	'.debug_info',debug,cluster('netifs')
+	.sect	'.debug_info'
+.L122:
+	.word	206
+	.half	3
+	.word	.L123
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1,2
+	.word	.L68
+	.byte	3
+	.byte	'netifs',0,4,65,29
+	.word	.L129
+	.byte	5,3
+	.word	netifs
+	.byte	0
+	.sdecl	'.debug_abbrev',debug,cluster('netifs')
+	.sect	'.debug_abbrev'
+.L123:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,73,16,2,9,0,0,0
+	.sdecl	'.debug_info',debug,cluster('defaultnetif')
+	.sect	'.debug_info'
+.L124:
+	.word	212
+	.half	3
+	.word	.L125
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1,2
+	.word	.L68
+	.byte	3
+	.byte	'defaultnetif',0,4,70,29
+	.word	.L129
+	.byte	5,3
+	.word	defaultnetif
+	.byte	0
+	.sdecl	'.debug_abbrev',debug,cluster('defaultnetif')
+	.sect	'.debug_abbrev'
+.L125:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,73,16,2,9,0,0,0
+	.sdecl	'.debug_info',debug,cluster('fwcache')
+	.sect	'.debug_info'
+.L126:
+	.word	208
+	.half	3
+	.word	.L127
+	.byte	4,1
+	.byte	'../uip/core/uip/uip-fw.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1,2
+	.word	.L68
+	.byte	3
+	.byte	'fwcache',0,4,184,1,29
+	.word	.L158
+	.byte	5,3
+	.word	fwcache
+	.byte	0
+	.sdecl	'.debug_abbrev',debug,cluster('fwcache')
+	.sect	'.debug_abbrev'
+.L127:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,73,16,2,9,0,0,0
+	.sdecl	'.debug_loc',debug,cluster('find_netif')
+	.sect	'.debug_loc'
+.L56:
+	.word	-1,.L57,0,.L156-.L57
+	.half	2
+	.byte	138,0
+	.word	0,0
+.L157:
+	.word	-1,.L57,.L169-.L57,.L170-.L57
+	.half	1
+	.byte	111
+	.word	.L171-.L57,.L172-.L57
+	.half	1
+	.byte	101
+	.word	.L173-.L57,.L174-.L57
+	.half	1
+	.byte	111
+	.word	.L174-.L57,.L16-.L57
+	.half	1
+	.byte	98
+	.word	.L16-.L57,.L175-.L57
+	.half	1
+	.byte	111
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('fwcache_register')
+	.sect	'.debug_loc'
+.L152:
+	.word	-1,.L55,.L163-.L55,.L164-.L55
+	.half	1
+	.byte	111
+	.word	.L166-.L55,.L167-.L55
+	.half	1
+	.byte	111
+	.word	.L168-.L55,.L151-.L55
+	.half	1
+	.byte	111
+	.word	0,0
+.L54:
+	.word	-1,.L55,0,.L151-.L55
+	.half	2
+	.byte	138,0
+	.word	0,0
+.L154:
+	.word	-1,.L55,.L165-.L55,.L151-.L55
+	.half	1
+	.byte	81
+	.word	0,0
+.L155:
+	.word	-1,.L55,.L162-.L55,.L151-.L55
+	.half	5
+	.byte	144,32,157,32,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_loc'
+.L145:
+	.word	-1,.L51,0,.L143-.L51
+	.half	1
+	.byte	100
+	.word	0,0
+.L50:
+	.word	-1,.L51,0,.L143-.L51
+	.half	2
+	.byte	138,0
+	.word	0,0
+.L146:
+	.word	-1,.L51,0,.L143-.L51
+	.half	1
+	.byte	101
+	.word	0,0
+.L147:
+	.word	-1,.L51,0,.L143-.L51
+	.half	1
+	.byte	102
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('time_exceeded')
+	.sect	'.debug_loc'
+.L52:
+	.word	-1,.L53,0,.L148-.L53
+	.half	2
+	.byte	138,0
+	.word	0,0
+.L150:
+	.word	-1,.L53,.L160-.L53,.L161-.L53
+	.half	1
+	.byte	95
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_default')
+	.sect	'.debug_loc'
+.L140:
+	.word	-1,.L65,0,.L139-.L65
+	.half	1
+	.byte	100
+	.word	0,0
+.L64:
+	.word	-1,.L65,0,.L139-.L65
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_forward')
+	.sect	'.debug_loc'
+.L134:
+	.word	-1,.L61,.L179-.L61,.L180-.L61
+	.half	1
+	.byte	111
+	.word	0,0
+.L60:
+	.word	-1,.L61,0,.L132-.L61
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_init')
+	.sect	'.debug_loc'
+.L130:
+	.word	-1,.L49,.L159-.L49,.L2-.L49
+	.half	1
+	.byte	111
+	.word	0,0
+.L48:
+	.word	-1,.L49,0,.L128-.L49
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_output')
+	.sect	'.debug_loc'
+.L136:
+	.word	-1,.L59,.L176-.L59,.L177-.L59
+	.half	1
+	.byte	98
+	.word	.L21-.L59,.L178-.L59
+	.half	1
+	.byte	98
+	.word	0,0
+.L58:
+	.word	-1,.L59,0,.L135-.L59
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_loc'
+.L142:
+	.word	-1,.L67,.L181-.L67,.L141-.L67
+	.half	1
+	.byte	111
+	.word	0,0
+.L66:
+	.word	-1,.L67,0,.L141-.L67
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('uip_fw_register')
+	.sect	'.debug_loc'
+.L138:
+	.word	-1,.L63,0,.L137-.L63
+	.half	1
+	.byte	100
+	.word	0,0
+.L62:
+	.word	-1,.L63,0,.L137-.L63
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_frame',debug
+	.sect	'.debug_frame'
+.L473:
+	.word	48
+	.word	-1
+	.byte	3,0,2,1,27,12,26,0,8,26,8,27,8,30,8,29,8,28,8,16,8,17,8,24,8,25,8,31,8,32,8,33,8,34,8,35,8,36,8,37,8,38
+	.byte	8,39
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_init')
+	.sect	'.debug_frame'
+	.word	20
+	.word	.L473,.L49,.L128-.L49
+	.byte	8,19,8,21,8,22,8,23
+	.sdecl	'.debug_frame',debug,cluster('ipaddr_maskcmp')
+	.sect	'.debug_frame'
+	.word	20
+	.word	.L473,.L51,.L143-.L51
+	.byte	8,18,8,19,8,23,0,0
+	.sdecl	'.debug_frame',debug,cluster('time_exceeded')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L473,.L53,.L148-.L53
+	.sdecl	'.debug_frame',debug,cluster('fwcache_register')
+	.sect	'.debug_frame'
+	.word	24
+	.word	.L473,.L55,.L151-.L55
+	.byte	8,19,8,20,8,21,8,22,8,23,0,0
+	.sdecl	'.debug_frame',debug,cluster('find_netif')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L473,.L57,.L156-.L57
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_output')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L473,.L59,.L135-.L59
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_forward')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L473,.L61,.L132-.L61
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_register')
+	.sect	'.debug_frame'
+	.word	24
+	.word	.L473,.L63,.L137-.L63
+	.byte	8,18,8,19,8,21,8,22,8,23,0,0
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_default')
+	.sect	'.debug_frame'
+	.word	24
+	.word	.L473,.L65,.L139-.L65
+	.byte	8,18,8,19,8,21,8,22,8,23,0,0
+	.sdecl	'.debug_frame',debug,cluster('uip_fw_periodic')
+	.sect	'.debug_frame'
+	.word	24
+	.word	.L473,.L67,.L141-.L67
+	.byte	8,19,8,20,8,21,8,22,8,23,0,0
+	; Module end

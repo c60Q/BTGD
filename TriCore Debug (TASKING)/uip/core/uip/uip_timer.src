@@ -1,0 +1,494 @@
+	; Module start
+	.compiler_version	"TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler v1.1r8 Build 22011964"
+	.compiler_invocation	"ctc -f cc224a --dep-file=uip/core/uip/uip_timer.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc39xb -D__CPU_TC39XB__ --core=tc1.6.2 --fp-model=+float -D__CPU__=tc39xb -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Configurations -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B\\\\_Reg -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Adc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Eth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Io -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Impl -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_PinMap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\source -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps\\\\dhcpc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3\\\\Tasking -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2004 -o uip/core/uip/uip_timer.src ../uip/core/uip/uip_timer.c"
+	.compiler_name		"ctc"
+	;source	'../uip/core/uip/uip_timer.c'
+
+	
+$TC162
+	
+	.sdecl	'.text.uip_timer.timer_set',code,cluster('timer_set')
+	.sect	'.text.uip_timer.timer_set'
+	.align	2
+	
+	.global	timer_set
+; Function timer_set
+.L4:
+timer_set:	.type	func
+	mov.aa	a15,a4
+.L47:
+	st.w	[a15]4,d4
+.L60:
+	call	clock_time
+.L46:
+	st.w	[a15],d2
+.L61:
+	ret
+.L35:
+	
+__timer_set_function_end:
+	.size	timer_set,__timer_set_function_end-timer_set
+.L19:
+	; End of function
+	
+	.sdecl	'.text.uip_timer.timer_reset',code,cluster('timer_reset')
+	.sect	'.text.uip_timer.timer_reset'
+	.align	2
+	
+	.global	timer_reset
+; Function timer_reset
+.L6:
+timer_reset:	.type	func
+	ld.w	d0,[a4]
+.L66:
+	ld.w	d15,[a4]4
+.L67:
+	add	d0,d15
+	st.w	[a4],d0
+.L68:
+	ret
+.L40:
+	
+__timer_reset_function_end:
+	.size	timer_reset,__timer_reset_function_end-timer_reset
+.L24:
+	; End of function
+	
+	.sdecl	'.text.uip_timer.timer_restart',code,cluster('timer_restart')
+	.sect	'.text.uip_timer.timer_restart'
+	.align	2
+	
+	.global	timer_restart
+; Function timer_restart
+.L8:
+timer_restart:	.type	func
+	mov.aa	a15,a4
+.L49:
+	call	clock_time
+.L48:
+	st.w	[a15],d2
+.L73:
+	ret
+.L42:
+	
+__timer_restart_function_end:
+	.size	timer_restart,__timer_restart_function_end-timer_restart
+.L29:
+	; End of function
+	
+	.sdecl	'.text.uip_timer.timer_expired',code,cluster('timer_expired')
+	.sect	'.text.uip_timer.timer_expired'
+	.align	2
+	
+	.global	timer_expired
+; Function timer_expired
+.L10:
+timer_expired:	.type	func
+	mov.aa	a15,a4
+.L51:
+	call	clock_time
+.L50:
+	ld.w	d15,[a15]
+.L78:
+	sub	d2,d15
+.L79:
+	ld.w	d15,[a15]4
+.L80:
+	ge	d2,d2,d15
+.L81:
+	j	.L2
+.L2:
+	ret
+.L44:
+	
+__timer_expired_function_end:
+	.size	timer_expired,__timer_expired_function_end-timer_expired
+.L34:
+	; End of function
+	
+	.calls	'timer_set','clock_time'
+	.calls	'timer_restart','clock_time'
+	.calls	'timer_expired','clock_time'
+	.calls	'timer_set','',0
+	.calls	'timer_reset','',0
+	.calls	'timer_restart','',0
+	.extern	clock_time
+	.calls	'timer_expired','',0
+	.sdecl	'.debug_info',debug
+	.sect	'.debug_info'
+.L12:
+	.word	313
+	.half	3
+	.word	.L13
+	.byte	4
+.L11:
+	.byte	1
+	.byte	'../uip/core/uip/uip_timer.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L14
+.L38:
+	.byte	2
+	.byte	'int',0,4,5,3
+	.byte	'clock_time',0,1,73,14
+	.word	190
+	.byte	1,1,1,1,4
+	.byte	'timer',0,2,74,8,8,5
+	.byte	'start',0
+	.word	190
+	.byte	4,2,35,0,5
+	.byte	'interval',0
+	.word	190
+	.byte	4,2,35,4,0
+.L36:
+	.byte	6
+	.word	220
+	.byte	7,1,6
+	.word	270
+	.byte	8
+	.byte	'__codeptr',0,3,1,1
+	.word	272
+	.byte	8
+	.byte	'clock_time_t',0,4,37,13
+	.word	190
+	.byte	0
+	.sdecl	'.debug_abbrev',debug
+	.sect	'.debug_abbrev'
+.L13:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,36,0,3,8,11,15,62,15,0,0,3,46,0,3,8,58,15,59,15,57,15
+	.byte	73,19,54,15,39,12,63,12,60,12,0,0,4,19,1,3,8,58,15,59,15,57,15,11,15,0,0,5,13,0,3,8,73,19,11,15,56,9,0
+	.byte	0,6,15,0,73,19,0,0,7,21,0,54,15,0,0,8,22,0,3,8,58,15,59,15,57,15,73,19,0,0,0
+	.sdecl	'.debug_line',debug
+	.sect	'.debug_line'
+.L14:
+	.word	.L53-.L52
+.L52:
+	.half	3
+	.word	.L55-.L54
+.L54:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.byte	'D:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app',0,0
+	.byte	'..\\uip\\core\\uip\\clock.h',0,0,0,0
+	.byte	'..\\uip\\core\\uip\\uip_timer.h',0,0,0,0
+	.byte	'../uip/core/uip/uip_timer.c',0,0,0,0
+	.byte	'clock-arch.h',0,1,0,0,0
+.L55:
+.L53:
+	.sdecl	'.debug_info',debug,cluster('timer_set')
+	.sect	'.debug_info'
+.L15:
+	.word	270
+	.half	3
+	.word	.L16
+	.byte	4,1
+	.byte	'../uip/core/uip/uip_timer.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L18,.L17
+	.byte	2
+	.word	.L11
+	.byte	3
+	.byte	'timer_set',0,1,64,1,1,1,1
+	.word	.L4,.L35,.L3
+	.byte	4
+	.byte	't',0,1,64,25
+	.word	.L36,.L37
+	.byte	4
+	.byte	'interval',0,1,64,41
+	.word	.L38,.L39
+	.byte	5
+	.word	.L4,.L35
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('timer_set')
+	.sect	'.debug_abbrev'
+.L16:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('timer_set')
+	.sect	'.debug_line'
+.L17:
+	.word	.L57-.L56
+.L56:
+	.half	3
+	.word	.L59-.L58
+.L58:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip_timer.c',0,0,0,0,0
+.L59:
+	.byte	5,1,7,0,5,2
+	.word	.L4
+	.byte	3,63,1,5,15,9
+	.half	.L47-.L4
+	.byte	3,2,1,5,24,9
+	.half	.L60-.L47
+	.byte	3,1,1,5,12,9
+	.half	.L46-.L60
+	.byte	1,5,1,9
+	.half	.L61-.L46
+	.byte	3,1,1,7,9
+	.half	.L19-.L61
+	.byte	0,1,1
+.L57:
+	.sdecl	'.debug_ranges',debug,cluster('timer_set')
+	.sect	'.debug_ranges'
+.L18:
+	.word	-1,.L4,0,.L19-.L4,0,0
+	.sdecl	'.debug_info',debug,cluster('timer_reset')
+	.sect	'.debug_info'
+.L20:
+	.word	251
+	.half	3
+	.word	.L21
+	.byte	4,1
+	.byte	'../uip/core/uip/uip_timer.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L23,.L22
+	.byte	2
+	.word	.L11
+	.byte	3
+	.byte	'timer_reset',0,1,84,1,1,1,1
+	.word	.L6,.L40,.L5
+	.byte	4
+	.byte	't',0,1,84,27
+	.word	.L36,.L41
+	.byte	5
+	.word	.L6,.L40
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('timer_reset')
+	.sect	'.debug_abbrev'
+.L21:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('timer_reset')
+	.sect	'.debug_line'
+.L22:
+	.word	.L63-.L62
+.L62:
+	.half	3
+	.word	.L65-.L64
+.L64:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip_timer.c',0,0,0,0,0
+.L65:
+	.byte	5,4,7,0,5,2
+	.word	.L6
+	.byte	3,213,0,1,5,16,9
+	.half	.L66-.L6
+	.byte	1,5,12,9
+	.half	.L67-.L66
+	.byte	1,5,1,9
+	.half	.L68-.L67
+	.byte	3,1,1,7,9
+	.half	.L24-.L68
+	.byte	0,1,1
+.L63:
+	.sdecl	'.debug_ranges',debug,cluster('timer_reset')
+	.sect	'.debug_ranges'
+.L23:
+	.word	-1,.L6,0,.L24-.L6,0,0
+	.sdecl	'.debug_info',debug,cluster('timer_restart')
+	.sect	'.debug_info'
+.L25:
+	.word	253
+	.half	3
+	.word	.L26
+	.byte	4,1
+	.byte	'../uip/core/uip/uip_timer.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L28,.L27
+	.byte	2
+	.word	.L11
+	.byte	3
+	.byte	'timer_restart',0,1,104,1,1,1,1
+	.word	.L8,.L42,.L7
+	.byte	4
+	.byte	't',0,1,104,29
+	.word	.L36,.L43
+	.byte	5
+	.word	.L8,.L42
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('timer_restart')
+	.sect	'.debug_abbrev'
+.L26:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('timer_restart')
+	.sect	'.debug_line'
+.L27:
+	.word	.L70-.L69
+.L69:
+	.half	3
+	.word	.L72-.L71
+.L71:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip_timer.c',0,0,0,0,0
+.L72:
+	.byte	5,1,7,0,5,2
+	.word	.L8
+	.byte	3,231,0,1,5,24,9
+	.half	.L49-.L8
+	.byte	3,2,1,5,12,9
+	.half	.L48-.L49
+	.byte	1,5,1,9
+	.half	.L73-.L48
+	.byte	3,1,1,7,9
+	.half	.L29-.L73
+	.byte	0,1,1
+.L70:
+	.sdecl	'.debug_ranges',debug,cluster('timer_restart')
+	.sect	'.debug_ranges'
+.L28:
+	.word	-1,.L8,0,.L29-.L8,0,0
+	.sdecl	'.debug_info',debug,cluster('timer_expired')
+	.sect	'.debug_info'
+.L30:
+	.word	257
+	.half	3
+	.word	.L31
+	.byte	4,1
+	.byte	'../uip/core/uip/uip_timer.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L33,.L32
+	.byte	2
+	.word	.L11
+	.byte	3
+	.byte	'timer_expired',0,1,121,1
+	.word	.L38
+	.byte	1,1,1
+	.word	.L10,.L44,.L9
+	.byte	4
+	.byte	't',0,1,121,29
+	.word	.L36,.L45
+	.byte	5
+	.word	.L10,.L44
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('timer_expired')
+	.sect	'.debug_abbrev'
+.L31:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('timer_expired')
+	.sect	'.debug_line'
+.L32:
+	.word	.L75-.L74
+.L74:
+	.half	3
+	.word	.L77-.L76
+.L76:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/uip/uip_timer.c',0,0,0,0,0
+.L77:
+	.byte	5,1,7,0,5,2
+	.word	.L10
+	.byte	3,248,0,1,5,35,9
+	.half	.L51-.L10
+	.byte	3,2,1,5,41,9
+	.half	.L50-.L51
+	.byte	1,5,38,9
+	.half	.L78-.L50
+	.byte	1,5,68,9
+	.half	.L79-.L78
+	.byte	1,5,50,9
+	.half	.L80-.L79
+	.byte	1,5,3,9
+	.half	.L81-.L80
+	.byte	1,5,1,9
+	.half	.L2-.L81
+	.byte	3,1,1,7,9
+	.half	.L34-.L2
+	.byte	0,1,1
+.L75:
+	.sdecl	'.debug_ranges',debug,cluster('timer_expired')
+	.sect	'.debug_ranges'
+.L33:
+	.word	-1,.L10,0,.L34-.L10,0,0
+	.sdecl	'.debug_loc',debug,cluster('timer_expired')
+	.sect	'.debug_loc'
+.L45:
+	.word	-1,.L10,0,.L50-.L10
+	.half	1
+	.byte	100
+	.word	.L51-.L10,.L44-.L10
+	.half	1
+	.byte	111
+	.word	0,0
+.L9:
+	.word	-1,.L10,0,.L44-.L10
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('timer_reset')
+	.sect	'.debug_loc'
+.L41:
+	.word	-1,.L6,0,.L40-.L6
+	.half	1
+	.byte	100
+	.word	0,0
+.L5:
+	.word	-1,.L6,0,.L40-.L6
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('timer_restart')
+	.sect	'.debug_loc'
+.L43:
+	.word	-1,.L8,0,.L48-.L8
+	.half	1
+	.byte	100
+	.word	.L49-.L8,.L42-.L8
+	.half	1
+	.byte	111
+	.word	0,0
+.L7:
+	.word	-1,.L8,0,.L42-.L8
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('timer_set')
+	.sect	'.debug_loc'
+.L39:
+	.word	-1,.L4,0,.L46-.L4
+	.half	1
+	.byte	84
+	.word	0,0
+.L37:
+	.word	-1,.L4,0,.L46-.L4
+	.half	1
+	.byte	100
+	.word	.L47-.L4,.L35-.L4
+	.half	1
+	.byte	111
+	.word	0,0
+.L3:
+	.word	-1,.L4,0,.L35-.L4
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_frame',debug
+	.sect	'.debug_frame'
+.L82:
+	.word	48
+	.word	-1
+	.byte	3,0,2,1,27,12,26,0,8,26,8,27,8,30,8,29,8,28,8,16,8,17,8,24,8,25,8,31,8,32,8,33,8,34,8,35,8,36,8,37,8,38
+	.byte	8,39
+	.sdecl	'.debug_frame',debug,cluster('timer_set')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L82,.L4,.L35-.L4
+	.sdecl	'.debug_frame',debug,cluster('timer_reset')
+	.sect	'.debug_frame'
+	.word	24
+	.word	.L82,.L6,.L40-.L6
+	.byte	8,18,8,19,8,21,8,22,8,23,0,0
+	.sdecl	'.debug_frame',debug,cluster('timer_restart')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L82,.L8,.L42-.L8
+	.sdecl	'.debug_frame',debug,cluster('timer_expired')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L82,.L10,.L44-.L10
+	; Module end

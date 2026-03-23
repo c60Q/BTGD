@@ -1,0 +1,608 @@
+	; Module start
+	.compiler_version	"TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler v1.1r8 Build 22011964"
+	.compiler_invocation	"ctc -f cc17836a --dep-file=uip/core/lib/memb.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc39xb -D__CPU_TC39XB__ --core=tc1.6.2 --fp-model=+float -D__CPU__=tc39xb -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Configurations -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Sfr\\\\TC39B\\\\_Reg -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Infra\\\\Ssw\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Can -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Can\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Adc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Evadc\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Eth -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Geth\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Pms\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Io -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Port\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Src\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Impl -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\Libraries\\\\iLLD\\\\TC39B\\\\Tricore\\\\_PinMap -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\source -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\TC3xx_Boot\\\\head -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\app -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\apps\\\\dhcpc -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\lib -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\core\\\\uip -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3 -ID:\\\\fw_code\\\\test\\\\ZCU_Test_Board_Bootloader\\\\uip\\\\TRICORE_TC3\\\\Tasking -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2004 -o uip/core/lib/memb.src ../uip/core/lib/memb.c"
+	.compiler_name		"ctc"
+	;source	'../uip/core/lib/memb.c'
+
+	
+$TC162
+	
+	.sdecl	'.text.memb.memb_init',code,cluster('memb_init')
+	.sect	'.text.memb.memb_init'
+	.align	2
+	
+	.global	memb_init
+; Function memb_init
+.L14:
+memb_init:	.type	func
+	mov.aa	a15,a4
+.L54:
+	ld.a	a4,[a15]4
+.L53:
+	mov	d4,#0
+.L68:
+	ld.hu	d5,[a15]2
+	call	memset
+.L69:
+	ld.a	a4,[a15]8
+.L70:
+	mov	d4,#0
+.L71:
+	ld.hu	d5,[a15]0
+.L72:
+	ld.hu	d15,[a15]2
+.L73:
+	mul	d5,d15
+	call	memset
+.L74:
+	ret
+.L38:
+	
+__memb_init_function_end:
+	.size	memb_init,__memb_init_function_end-memb_init
+.L27:
+	; End of function
+	
+	.sdecl	'.text.memb.memb_alloc',code,cluster('memb_alloc')
+	.sect	'.text.memb.memb_alloc'
+	.align	2
+	
+	.global	memb_alloc
+; Function memb_alloc
+.L16:
+memb_alloc:	.type	func
+	mov	d15,#0
+.L55:
+	j	.L2
+.L3:
+	ld.a	a15,[a4]4
+.L79:
+	addsc.a	a15,a15,d15,#0
+	ld.b	d0,[a15]0
+.L80:
+	jne	d0,#0,.L4
+.L81:
+	ld.a	a15,[a4]4
+.L82:
+	addsc.a	a15,a15,d15,#0
+	mov	d0,#0
+.L83:
+	add	d0,#1
+	st.b	[a15],d0
+.L84:
+	ld.hu	d0,[a4]0
+.L85:
+	mul	d15,d0
+.L56:
+	ld.a	a15,[a4]8
+.L86:
+	addsc.a	a2,a15,d15,#0
+.L87:
+	j	.L5
+.L4:
+	add	d15,#1
+.L2:
+	ld.hu	d0,[a4]2
+.L88:
+	jlt	d15,d0,.L3
+.L89:
+	mov.a	a2,#0
+.L90:
+	j	.L6
+.L6:
+.L5:
+	ret
+.L42:
+	
+__memb_alloc_function_end:
+	.size	memb_alloc,__memb_alloc_function_end-memb_alloc
+.L32:
+	; End of function
+	
+	.sdecl	'.text.memb.memb_free',code,cluster('memb_free')
+	.sect	'.text.memb.memb_free'
+	.align	2
+	
+	.global	memb_free
+; Function memb_free
+.L18:
+memb_free:	.type	func
+	ld.a	a15,[a4]8
+.L57:
+	mov	d15,#0
+.L59:
+	j	.L7
+.L8:
+	jne.a	a15,a5,.L9
+.L95:
+	ld.a	a15,[a4]4
+.L58:
+	addsc.a	a15,a15,d15,#0
+	ld.b	d0,[a15]0
+.L96:
+	jlt	d0,#1,.L10
+.L97:
+	ld.a	a15,[a4]4
+.L98:
+	addsc.a	a15,a15,d15,#0
+.L99:
+	ld.a	a2,[a4]4
+.L100:
+	addsc.a	a2,a2,d15,#0
+	ld.b	d0,[a2]0
+.L101:
+	add	d0,#-1
+	st.b	[a15],d0
+.L10:
+	ld.a	a15,[a4]4
+.L102:
+	addsc.a	a15,a15,d15,#0
+	ld.b	d2,[a15]0
+.L103:
+	j	.L11
+.L9:
+	ld.hu	d0,[a4]0
+.L104:
+	addsc.a	a15,a15,d0,#0
+.L105:
+	add	d15,#1
+.L7:
+	ld.hu	d0,[a4]2
+.L106:
+	jlt	d15,d0,.L8
+.L107:
+	mov	d2,#-1
+.L108:
+	j	.L12
+.L12:
+.L11:
+	ret
+.L47:
+	
+__memb_free_function_end:
+	.size	memb_free,__memb_free_function_end-memb_free
+.L37:
+	; End of function
+	
+	.calls	'memb_init','memset'
+	.calls	'memb_init','',0
+	.calls	'memb_alloc','',0
+	.extern	memset
+	.calls	'memb_free','',0
+	.sdecl	'.debug_info',debug
+	.sect	'.debug_info'
+.L20:
+	.word	430
+	.half	3
+	.word	.L21
+	.byte	4
+.L19:
+	.byte	1
+	.byte	'../uip/core/lib/memb.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L22
+	.byte	2
+	.byte	'void',0
+.L41:
+	.byte	3
+	.word	185
+.L44:
+	.byte	4
+	.byte	'int',0,4,5,4
+	.byte	'unsigned int',0,4,7,5
+	.byte	'memset',0,1,56,17
+	.word	191
+	.byte	1,1,1,1,6,1,56,33
+	.word	191
+	.byte	6,1,56,36
+	.word	196
+	.byte	6,1,56,41
+	.word	203
+	.byte	0,4
+	.byte	'unsigned short int',0,2,7
+.L46:
+	.byte	4
+	.byte	'char',0,1,6
+.L51:
+	.byte	3
+	.word	285
+	.byte	7
+	.byte	'memb_blocks',0,2,105,8,12,8
+	.byte	'size',0
+	.word	263
+	.byte	2,2,35,0,8
+	.byte	'num',0
+	.word	263
+	.byte	2,2,35,2,8
+	.byte	'count',0
+	.word	293
+	.byte	4,2,35,4,8
+	.byte	'mem',0
+	.word	191
+	.byte	4,2,35,8,0
+.L39:
+	.byte	3
+	.word	298
+	.byte	9
+	.byte	'__size_t',0,3,1,1
+	.word	203
+	.byte	10,1,3
+	.word	393
+	.byte	9
+	.byte	'__codeptr',0,3,1,1
+	.word	395
+	.byte	9
+	.byte	'size_t',0,1,29,25
+	.word	203
+	.byte	0
+	.sdecl	'.debug_abbrev',debug
+	.sect	'.debug_abbrev'
+.L21:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,16,6,0,0,2,59,0,3,8,0,0,3,15,0,73,19,0,0,4,36,0,3,8,11,15,62,15,0
+	.byte	0,5,46,1,3,8,58,15,59,15,57,15,73,19,54,15,39,12,63,12,60,12,0,0,6,5,0,58,15,59,15,57,15,73,19,0,0,7,19
+	.byte	1,3,8,58,15,59,15,57,15,11,15,0,0,8,13,0,3,8,73,19,11,15,56,9,0,0,9,22,0,3,8,58,15,59,15,57,15,73,19,0
+	.byte	0,10,21,0,54,15,0,0,0
+	.sdecl	'.debug_line',debug
+	.sect	'.debug_line'
+.L22:
+	.word	.L61-.L60
+.L60:
+	.half	3
+	.word	.L63-.L62
+.L62:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
+	.byte	'C:\\Infineon\\AURIX-Studio-1.9.4\\plugins\\com.infineon.aurix.tools_1.9.4\\build_system\\tools\\Compilers\\Tasking_1.1r8\\ctc\\include\\',0
+	.byte	0
+	.byte	'string.h',0,1,0,0
+	.byte	'..\\uip\\core\\lib\\memb.h',0,0,0,0
+	.byte	'../uip/core/lib/memb.c',0,0,0,0,0
+.L63:
+.L61:
+	.sdecl	'.debug_info',debug,cluster('memb_init')
+	.sect	'.debug_info'
+.L23:
+	.word	244
+	.half	3
+	.word	.L24
+	.byte	4,1
+	.byte	'../uip/core/lib/memb.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L26,.L25
+	.byte	2
+	.word	.L19
+	.byte	3
+	.byte	'memb_init',0,1,52,1,1,1,1
+	.word	.L14,.L38,.L13
+	.byte	4
+	.byte	'm',0,1,52,31
+	.word	.L39,.L40
+	.byte	5
+	.word	.L14,.L38
+	.byte	0,0
+	.sdecl	'.debug_abbrev',debug,cluster('memb_init')
+	.sect	'.debug_abbrev'
+.L24:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,54,15
+	.byte	39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,0,17,1,18,1,0,0,0
+	.sdecl	'.debug_line',debug,cluster('memb_init')
+	.sect	'.debug_line'
+.L25:
+	.word	.L65-.L64
+.L64:
+	.half	3
+	.word	.L67-.L66
+.L66:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/lib/memb.c',0,0,0,0,0
+.L67:
+	.byte	5,1,7,0,5,2
+	.word	.L14
+	.byte	3,51,1,5,11,9
+	.half	.L54-.L14
+	.byte	3,2,1,5,20,9
+	.half	.L53-.L54
+	.byte	1,5,24,9
+	.half	.L68-.L53
+	.byte	1,5,11,9
+	.half	.L69-.L68
+	.byte	3,1,1,5,18,9
+	.half	.L70-.L69
+	.byte	1,5,22,9
+	.half	.L71-.L70
+	.byte	1,5,32,9
+	.half	.L72-.L71
+	.byte	1,5,29,9
+	.half	.L73-.L72
+	.byte	1,5,1,9
+	.half	.L74-.L73
+	.byte	3,1,1,7,9
+	.half	.L27-.L74
+	.byte	0,1,1
+.L65:
+	.sdecl	'.debug_ranges',debug,cluster('memb_init')
+	.sect	'.debug_ranges'
+.L26:
+	.word	-1,.L14,0,.L27-.L14,0,0
+	.sdecl	'.debug_info',debug,cluster('memb_alloc')
+	.sect	'.debug_info'
+.L28:
+	.word	264
+	.half	3
+	.word	.L29
+	.byte	4,1
+	.byte	'../uip/core/lib/memb.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L31,.L30
+	.byte	2
+	.word	.L19
+	.byte	3
+	.byte	'memb_alloc',0,1,59,1
+	.word	.L41
+	.byte	1,1,1
+	.word	.L16,.L42,.L15
+	.byte	4
+	.byte	'm',0,1,59,32
+	.word	.L39,.L43
+	.byte	5
+	.word	.L16,.L42
+	.byte	6
+	.byte	'i',0,1,61,7
+	.word	.L44,.L45
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('memb_alloc')
+	.sect	'.debug_abbrev'
+.L29:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,1,17,1,18,1,0,0,6
+	.byte	52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('memb_alloc')
+	.sect	'.debug_line'
+.L30:
+	.word	.L76-.L75
+.L75:
+	.half	3
+	.word	.L78-.L77
+.L77:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/lib/memb.c',0,0,0,0,0
+.L78:
+	.byte	5,10,7,0,5,2
+	.word	.L16
+	.byte	3,62,1,5,25,9
+	.half	.L55-.L16
+	.byte	1,5,10,9
+	.half	.L3-.L55
+	.byte	3,2,1,5,17,9
+	.half	.L79-.L3
+	.byte	1,5,5,9
+	.half	.L80-.L79
+	.byte	1,5,11,7,9
+	.half	.L81-.L80
+	.byte	3,5,1,5,18,9
+	.half	.L82-.L81
+	.byte	1,5,7,9
+	.half	.L83-.L82
+	.byte	1,5,46,9
+	.half	.L84-.L83
+	.byte	3,1,1,5,43,9
+	.half	.L85-.L84
+	.byte	1,5,32,9
+	.half	.L56-.L85
+	.byte	1,5,38,9
+	.half	.L86-.L56
+	.byte	1,5,7,9
+	.half	.L87-.L86
+	.byte	1,5,27,9
+	.half	.L4-.L87
+	.byte	3,120,1,5,20,9
+	.half	.L2-.L4
+	.byte	1,5,25,9
+	.half	.L88-.L2
+	.byte	1,5,10,7,9
+	.half	.L89-.L88
+	.byte	3,14,1,5,3,9
+	.half	.L90-.L89
+	.byte	1,5,1,9
+	.half	.L5-.L90
+	.byte	3,1,1,7,9
+	.half	.L32-.L5
+	.byte	0,1,1
+.L76:
+	.sdecl	'.debug_ranges',debug,cluster('memb_alloc')
+	.sect	'.debug_ranges'
+.L31:
+	.word	-1,.L16,0,.L32-.L16,0,0
+	.sdecl	'.debug_info',debug,cluster('memb_free')
+	.sect	'.debug_info'
+.L33:
+	.word	296
+	.half	3
+	.word	.L34
+	.byte	4,1
+	.byte	'../uip/core/lib/memb.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\fw_code\\test\\ZCU_Test_Board_Bootloader\\TriCore Debug (TASKING)\\',0,12,1
+	.word	.L36,.L35
+	.byte	2
+	.word	.L19
+	.byte	3
+	.byte	'memb_free',0,1,81,1
+	.word	.L46
+	.byte	1,1,1
+	.word	.L18,.L47,.L17
+	.byte	4
+	.byte	'm',0,1,81,31
+	.word	.L39,.L48
+	.byte	4
+	.byte	'ptr',0,1,81,40
+	.word	.L41,.L49
+	.byte	5
+	.word	.L18,.L47
+	.byte	6
+	.byte	'i',0,1,83,7
+	.word	.L44,.L50
+	.byte	6
+	.byte	'ptr2',0,1,84,9
+	.word	.L51,.L52
+	.byte	0,0,0
+	.sdecl	'.debug_abbrev',debug,cluster('memb_free')
+	.sect	'.debug_abbrev'
+.L34:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,85,6,16,6,0,0,2,61,0,24,16,0,0,3,46,1,3,8,58,15,59,15,57,15,73,16
+	.byte	54,15,39,12,63,12,17,1,18,1,64,6,0,0,4,5,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,5,11,1,17,1,18,1,0,0,6
+	.byte	52,0,3,8,58,15,59,15,57,15,73,16,2,6,0,0,0
+	.sdecl	'.debug_line',debug,cluster('memb_free')
+	.sect	'.debug_line'
+.L35:
+	.word	.L92-.L91
+.L91:
+	.half	3
+	.word	.L94-.L93
+.L93:
+	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
+	.byte	'../uip/core/lib/memb.c',0,0,0,0,0
+.L94:
+	.byte	5,19,7,0,5,2
+	.word	.L18
+	.byte	3,215,0,1,5,10,9
+	.half	.L57-.L18
+	.byte	3,1,1,5,25,9
+	.half	.L59-.L57
+	.byte	1,5,5,9
+	.half	.L8-.L59
+	.byte	3,3,1,5,12,7,9
+	.half	.L95-.L8
+	.byte	3,4,1,5,19,9
+	.half	.L58-.L95
+	.byte	1,5,7,9
+	.half	.L96-.L58
+	.byte	1,5,13,7,9
+	.half	.L97-.L96
+	.byte	3,3,1,5,20,9
+	.half	.L98-.L97
+	.byte	1,5,13,9
+	.half	.L99-.L98
+	.byte	1,5,20,9
+	.half	.L100-.L99
+	.byte	1,5,9,9
+	.half	.L101-.L100
+	.byte	1,5,15,9
+	.half	.L10-.L101
+	.byte	3,2,1,5,22,9
+	.half	.L102-.L10
+	.byte	1,5,7,9
+	.half	.L103-.L102
+	.byte	1,5,14,9
+	.half	.L9-.L103
+	.byte	3,2,1,5,10,9
+	.half	.L104-.L9
+	.byte	1,5,27,9
+	.half	.L105-.L104
+	.byte	3,114,1,5,20,9
+	.half	.L7-.L105
+	.byte	1,5,25,9
+	.half	.L106-.L7
+	.byte	1,5,10,7,9
+	.half	.L107-.L106
+	.byte	3,16,1,5,3,9
+	.half	.L108-.L107
+	.byte	1,5,1,9
+	.half	.L11-.L108
+	.byte	3,1,1,7,9
+	.half	.L37-.L11
+	.byte	0,1,1
+.L92:
+	.sdecl	'.debug_ranges',debug,cluster('memb_free')
+	.sect	'.debug_ranges'
+.L36:
+	.word	-1,.L18,0,.L37-.L18,0,0
+	.sdecl	'.debug_loc',debug,cluster('memb_alloc')
+	.sect	'.debug_loc'
+.L45:
+	.word	-1,.L16,.L55-.L16,.L56-.L16
+	.half	1
+	.byte	95
+	.word	.L4-.L16,.L5-.L16
+	.half	1
+	.byte	95
+	.word	0,0
+.L43:
+	.word	-1,.L16,0,.L42-.L16
+	.half	1
+	.byte	100
+	.word	0,0
+.L15:
+	.word	-1,.L16,0,.L42-.L16
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('memb_free')
+	.sect	'.debug_loc'
+.L50:
+	.word	-1,.L18,.L59-.L18,.L47-.L18
+	.half	1
+	.byte	95
+	.word	0,0
+.L48:
+	.word	-1,.L18,0,.L47-.L18
+	.half	1
+	.byte	100
+	.word	0,0
+.L17:
+	.word	-1,.L18,0,.L47-.L18
+	.half	2
+	.byte	138,0
+	.word	0,0
+.L49:
+	.word	-1,.L18,0,.L47-.L18
+	.half	1
+	.byte	101
+	.word	0,0
+.L52:
+	.word	-1,.L18,.L57-.L18,.L58-.L18
+	.half	1
+	.byte	111
+	.word	.L9-.L18,.L11-.L18
+	.half	1
+	.byte	111
+	.word	0,0
+	.sdecl	'.debug_loc',debug,cluster('memb_init')
+	.sect	'.debug_loc'
+.L40:
+	.word	-1,.L14,0,.L53-.L14
+	.half	1
+	.byte	100
+	.word	.L54-.L14,.L38-.L14
+	.half	1
+	.byte	111
+	.word	0,0
+.L13:
+	.word	-1,.L14,0,.L38-.L14
+	.half	2
+	.byte	138,0
+	.word	0,0
+	.sdecl	'.debug_frame',debug
+	.sect	'.debug_frame'
+.L109:
+	.word	48
+	.word	-1
+	.byte	3,0,2,1,27,12,26,0,8,26,8,27,8,30,8,29,8,28,8,16,8,17,8,24,8,25,8,31,8,32,8,33,8,34,8,35,8,36,8,37,8,38
+	.byte	8,39
+	.sdecl	'.debug_frame',debug,cluster('memb_init')
+	.sect	'.debug_frame'
+	.word	12
+	.word	.L109,.L14,.L38-.L14
+	.sdecl	'.debug_frame',debug,cluster('memb_alloc')
+	.sect	'.debug_frame'
+	.word	20
+	.word	.L109,.L16,.L42-.L16
+	.byte	8,19,8,21,8,22,8,23
+	.sdecl	'.debug_frame',debug,cluster('memb_free')
+	.sect	'.debug_frame'
+	.word	20
+	.word	.L109,.L18,.L47-.L18
+	.byte	8,19,8,22,8,23,0,0
+	; Module end
