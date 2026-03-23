@@ -60,6 +60,7 @@
 
 
 #include "uip_arp.h"
+#include "boot_transport.h"
 
 #include <string.h>
 
@@ -130,6 +131,20 @@ static u8_t tmpage;
 
 #define BUF   ((struct arp_hdr *)&uip_buf[0])
 #define IPBUF ((struct ethip_hdr *)&uip_buf[0])
+
+static void uip_arp_debug_print_ip(const char *label, const u16_t *ipaddr)
+{
+  Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
+  Debug_Print_Out("  ip[0] = ", (uint32_t)((ipaddr[0] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
+  Debug_Print_Out("  ip[1] = ", (uint32_t)(ipaddr[0] & 0xFFu), 0, 0u, dbug_num_type_U32);
+  Debug_Print_Out("  ip[2] = ", (uint32_t)((ipaddr[1] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
+  Debug_Print_Out("  ip[3] = ", (uint32_t)(ipaddr[1] & 0xFFu), 0, 0u, dbug_num_type_U32);
+}
+
+static void uip_arp_debug_print_mac(const char *label, const struct uip_eth_addr *mac)
+{
+  Debug_Print_Data_Array(label, mac->addr, 6u);
+}
 /*-----------------------------------------------------------------------------------*/
 /**
  * Initialize the ARP module.
@@ -305,27 +320,38 @@ uip_arp_ipin(void)
 void
 uip_arp_arpin(void)
 {
+  uint8_t targetMatch;
 
   if (uip_len < sizeof(struct arp_hdr))
   {
+    Debug_Print_Out("uip_arp_arpin: short packet", 0u, 0, 0u, dbug_num_type_str);
     uip_len = 0;
     return;
   }
+
+  Debug_Print_Out("uip_arp_arpin enter", 0u, 0, 0u, dbug_num_type_str);
+  Debug_Print_Out("uip_arp opcode = ", (uint32_t)HTONS(BUF->opcode), 0, 0u, dbug_num_type_U32);
+  uip_arp_debug_print_mac("uip_arp eth dst = ", &BUF->ethhdr.dest);
+  uip_arp_debug_print_mac("uip_arp eth src = ", &BUF->ethhdr.src);
+  uip_arp_debug_print_mac("uip_arp sender mac = ", &BUF->shwaddr);
+  uip_arp_debug_print_mac("uip_arp target mac = ", &BUF->dhwaddr);
+  uip_arp_debug_print_ip("uip_arp sender ip", BUF->sipaddr);
+  uip_arp_debug_print_ip("uip_arp target ip", BUF->dipaddr);
+  uip_arp_debug_print_ip("uip_arp local ip", uip_hostaddr);
+
   uip_len = 0;
+  targetMatch = uip_ipaddr_cmp(BUF->dipaddr, uip_hostaddr) ? 1u : 0u;
+  Debug_Print_Out("uip_arp target match = ", (uint32_t)targetMatch, 0, 0u, dbug_num_type_U32);
 
   switch (BUF->opcode)
   {
     case HTONS(ARP_REQUEST):
-      /* ARP request. If it asked for our address, we send out a
-         reply. */
-      if (uip_ipaddr_cmp(BUF->dipaddr, uip_hostaddr))
+      Debug_Print_Out("uip_arp request", 0u, 0, 0u, dbug_num_type_str);
+      if (targetMatch != 0u)
       {
-        /* First, we register the one who made the request in our ARP
-        table, since it is likely that we will do more communication
-        with this host in the future. */
+        Debug_Print_Out("uip_arp request for local ip", 0u, 0, 0u, dbug_num_type_str);
         uip_arp_update(BUF->sipaddr, &BUF->shwaddr);
 
-        /* The reply opcode is 2. */
         BUF->opcode = HTONS(2);
 
         memcpy(BUF->dhwaddr.addr, BUF->shwaddr.addr, 6);
@@ -340,18 +366,35 @@ uip_arp_arpin(void)
 
         BUF->ethhdr.type = HTONS(UIP_ETHTYPE_ARP);
         uip_len = sizeof(struct arp_hdr);
+        uip_arp_debug_print_mac("uip_arp reply dst mac = ", &BUF->ethhdr.dest);
+        uip_arp_debug_print_mac("uip_arp reply src mac = ", &BUF->ethhdr.src);
+        uip_arp_debug_print_ip("uip_arp reply sender ip", BUF->sipaddr);
+        uip_arp_debug_print_ip("uip_arp reply target ip", BUF->dipaddr);
+        Debug_Print_Out("uip_arp reply prepared", 0u, 0, 0u, dbug_num_type_str);
+      }
+      else
+      {
+        Debug_Print_Out("uip_arp request not for local ip", 0u, 0, 0u, dbug_num_type_str);
       }
       break;
     case HTONS(ARP_REPLY):
-      /* ARP reply. We insert or update the ARP table if it was meant
-         for us. */
-      if (uip_ipaddr_cmp(BUF->dipaddr, uip_hostaddr))
+      Debug_Print_Out("uip_arp reply", 0u, 0, 0u, dbug_num_type_str);
+      if (targetMatch != 0u)
       {
+        Debug_Print_Out("uip_arp reply for local ip", 0u, 0, 0u, dbug_num_type_str);
         uip_arp_update(BUF->sipaddr, &BUF->shwaddr);
       }
+      else
+      {
+        Debug_Print_Out("uip_arp reply not for local ip", 0u, 0, 0u, dbug_num_type_str);
+      }
+      break;
+    default:
+      Debug_Print_Out("uip_arp unknown opcode", (uint32_t)HTONS(BUF->opcode), 0, 0u, dbug_num_type_U32);
       break;
   }
 
+  Debug_Print_Out("uip_arp_arpin exit uip_len = ", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
   return;
 }
 /*-----------------------------------------------------------------------------------*/

@@ -68,14 +68,13 @@ void Boot_Debug_Uart_Counter_Test(void)
     static uint32_t s_counter = 0u;
     systemTime now = getTime();
 
-    if(now.totalSeconds == s_lastPrintSecond){
+    if((s_lastPrintSecond != UINT64_MAX) && ((now.totalSeconds - s_lastPrintSecond) < 5u)){
         return;
     }
 
     s_lastPrintSecond = now.totalSeconds;
 	s_counter++;
-    debugPrintOnce = true;
-	Debug_Print_Out("counter = ", s_counter, 0, 0u, dbug_num_type_U32);
+	Debug_Print_Force_Out("heartbeat(5s) = ", s_counter, 0, 0u, dbug_num_type_U32);
 }
 
 
@@ -136,6 +135,8 @@ void DebugUart3_init(void)
 	IfxAsclin_Asc_stdIfDPipeInit(&g_ascStandardInterface, &g_asc3);
 	Ifx_Console_init(&g_ascStandardInterface);
 	g_debugUartInitialized = TRUE;
+	Debug_Print_Force_Out("{Debug UART ready}", 0u, 0, 0u, dbug_num_type_str);
+	Debug_Print_Force_Out("BOOT_UART_BAUD = ", BOOT_UART_BAUDRATE, 0, 0u, dbug_num_type_U32);
 }
 
 static void Boot_Debug_Uart_AppendChar(char *buf, size_t bufSize, size_t *idx, char ch)
@@ -303,7 +304,8 @@ void Debug_Print_Data_Array(const char *prefix, const uint8_t *data, uint32_t le
 	debugPrintOnce = false;
 }
 
-void Debug_Print_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32, debuf_num_type_t d_type)
+static void Boot_Debug_Uart_PrintLine(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32,
+		debuf_num_type_t d_type, boolean requireGate)
 {
 	Ifx_SizeT count;
 	char debugBuffer[128];
@@ -313,8 +315,8 @@ void Debug_Print_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t 
 		return;
 	}
 
-	if(debugPrintOnce == false){
-		return; /* same str -> skip */
+	if((requireGate != FALSE) && (debugPrintOnce == false)){
+		return;
 	}
 
 	debugBuffer[0] = '\0';
@@ -345,7 +347,19 @@ void Debug_Print_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t 
 	}
 
 	(void)IfxStdIf_DPipe_flushTx(&g_ascStandardInterface, TIME_INFINITE);
-	debugPrintOnce = false;
+	if(requireGate != FALSE){
+		debugPrintOnce = false;
+	}
+}
+
+void Debug_Print_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32, debuf_num_type_t d_type)
+{
+	Boot_Debug_Uart_PrintLine(s, num_U32, num_I32, num_HEX32, d_type, TRUE);
+}
+
+void Debug_Print_Force_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32, debuf_num_type_t d_type)
+{
+	Boot_Debug_Uart_PrintLine(s, num_U32, num_I32, num_HEX32, d_type, FALSE);
 }
 
 

@@ -47,14 +47,17 @@
 /******************************************************************************/
 
 #include "IfxGeth_Eth.h"
+#include "Compilers.h"
 
 /******************************************************************************/
 /*-----------------------Exported Variables/Constants-------------------------*/
 /******************************************************************************/
 
-IfxGeth_RxDescrList IfxGeth_Eth_rxDescrList[IFXGETH_NUM_MODULES][IFXGETH_NUM_RX_CHANNELS];
+BEGIN_DATA_SECTION(lmubss)
+IfxGeth_RxDescrList IFX_ALIGN(64) IfxGeth_Eth_rxDescrList[IFXGETH_NUM_MODULES][IFXGETH_NUM_RX_CHANNELS];
 
-IfxGeth_TxDescrList IfxGeth_Eth_txDescrList[IFXGETH_NUM_MODULES][IFXGETH_NUM_TX_CHANNELS];
+IfxGeth_TxDescrList IFX_ALIGN(64) IfxGeth_Eth_txDescrList[IFXGETH_NUM_MODULES][IFXGETH_NUM_TX_CHANNELS];
+END_DATA_SECTION
 
 /******************************************************************************/
 /*-------------------------Function Implementations---------------------------*/
@@ -219,8 +222,11 @@ void IfxGeth_Eth_freeReceiveBuffer(IfxGeth_Eth *geth, IfxGeth_RxDmaChannel chann
     rdes3.R.BUF2V  = 0; /* buffer 2 not valid */
     rdes3.R.IOC    = 1; /* interrupt enabled */
     rdes3.R.OWN    = 1; /* owned by DMA */
+    __dsync();
     descr->RDES3.U = rdes3.U;
+    __dsync();
     IfxGeth_Eth_shuffleRxDescriptor(geth, channelId);
+    IfxGeth_Eth_wakeupReceiver(geth, channelId);
 }
 
 
@@ -229,10 +235,13 @@ void *IfxGeth_Eth_getReceiveBuffer(IfxGeth_Eth *geth, IfxGeth_RxDmaChannel chann
     void                     *result = 0;
     volatile IfxGeth_RxDescr *descr;
 
+    __dsync();
+
     if (IfxGeth_Eth_isRxDataAvailable(geth, channelId))
     {
         geth->rxChannel[channelId].rxCount++;
         descr  = IfxGeth_Eth_getActualRxDescriptor(geth, channelId);
+        __dsync();
         result = (void *)(descr->RDES0.U);
     }
 
@@ -584,6 +593,8 @@ void IfxGeth_Eth_initReceiveDescriptors(IfxGeth_Eth *geth, IfxGeth_Eth_RxChannel
     geth->rxChannel[channelId].rxDescrList = config->rxDescrList;
 
     volatile IfxGeth_RxDescr *descr = IfxGeth_Eth_getBaseRxDescriptor(geth, channelId);
+    volatile IfxGeth_RxDescr *baseDescr = descr;
+    uint32                    tailPointer;
 
     geth->rxChannel[channelId].rxDescrPtr = descr;
 
@@ -609,8 +620,15 @@ void IfxGeth_Eth_initReceiveDescriptors(IfxGeth_Eth *geth, IfxGeth_Eth_RxChannel
     /* set the buffer size */
     IfxGeth_dma_setRxBufferSize(geth->gethSFR, channelId, config->rxBuffer1Size);
 
-    IfxGeth_dma_setRxDescriptorListAddress(geth->gethSFR, channelId, (uint32)IfxGeth_Eth_getBaseRxDescriptor(geth, channelId));
-    IfxGeth_dma_setRxDescriptorTailPointer(geth->gethSFR, channelId, (uint32)descr);
+    /* Keep the iLLD default RX tail semantics: program one-past-last.
+     * The TC3xx GETH RX DMA accepts this ring window directly and a later
+     * higher-level recovery path can still switch to last-valid-descriptor
+     * mode when diagnosing a live stall.
+     */
+    tailPointer = (uint32)baseDescr + ((uint32)sizeof(IfxGeth_RxDescr) * (uint32)IFXGETH_MAX_RX_DESCRIPTORS);
+
+    IfxGeth_dma_setRxDescriptorListAddress(geth->gethSFR, channelId, (uint32)baseDescr);
+    IfxGeth_dma_setRxDescriptorTailPointer(geth->gethSFR, channelId, tailPointer);
     IfxGeth_dma_setRxDescriptorRingLength(geth->gethSFR, channelId, (IFXGETH_MAX_RX_DESCRIPTORS - 1));
 }
 
@@ -648,11 +666,26 @@ void IfxGeth_Eth_initTransmitDescriptors(IfxGeth_Eth *geth, IfxGeth_Eth_TxChanne
         descr = &descr[1];
     }
 
-    /* rest the current pointer to base pointer in the handle */
+    /* reset the current pointer to base pointer in the handle */
     geth->txChannel[channelId].txDescrPtr = IfxGeth_Eth_getBaseTxDescriptor(geth, channelId);
 
     IfxGeth_dma_setTxDescriptorListAddress(geth->gethSFR, channelId, (uint32)IfxGeth_Eth_getBaseTxDescriptor(geth, channelId));
     IfxGeth_dma_setTxDescriptorRingLength(geth->gethSFR, channelId, (IFXGETH_MAX_TX_DESCRIPTORS - 1));
+
+    /* Program a conservative tail pointer during init.
+     *
+     * On this TC399 bring-up we observed a pathological state where the TX channel
+     * reports ST=1 but never fetches the first descriptor and CURRENT_APP_TXDESC
+     * remains 0x0. For Synopsys DWMAC/EQoS style DMA, the tail pointer is the
+     * descriptor boundary that the DMA is allowed to process up to; using the ring
+     * end as the initial boundary is a safer kick than leaving it at 0x0 or exactly
+     * at the base address.
+     */
+    __dsync();
+    IfxGeth_dma_setTxDescriptorTailPointer(geth->gethSFR, channelId,
+        ((uint32)IfxGeth_Eth_getBaseTxDescriptor(geth, channelId)) +
+        ((uint32)sizeof(IfxGeth_TxDescr) * (uint32)IFXGETH_MAX_TX_DESCRIPTORS));
+    __dsync();
 }
 
 
@@ -665,9 +698,10 @@ void IfxGeth_Eth_sendFrame(IfxGeth_Eth *geth, IfxGeth_Eth_FrameConfig *config)
 void IfxGeth_Eth_sendTransmitBuffer(IfxGeth_Eth *geth, uint32 packetLength, IfxGeth_TxDmaChannel channelId)
 {
     uint32                    i;
+    uint32                    remainingLength  = packetLength;
     volatile IfxGeth_TxDescr *firstDescr       = IfxGeth_Eth_getActualTxDescriptor(geth, channelId);
     volatile IfxGeth_TxDescr *descr            = firstDescr;
-    volatile IfxGeth_TxDescr *nextDescr        = &firstDescr[1];
+    volatile IfxGeth_TxDescr *nextDescr        = firstDescr;
     uint32                    bufferLength     = geth->txChannel[channelId].txBuf1Size; /* get the configured buffer length */
     /* calculate the number of descriptors needed for the frame based on buffer length */
     uint32                    numOfDescriptors = packetLength / bufferLength;
@@ -677,46 +711,120 @@ void IfxGeth_Eth_sendTransmitBuffer(IfxGeth_Eth *geth, uint32 packetLength, IfxG
         numOfDescriptors += 1;
     }
 
-    /* configure the first descriptor */
-    firstDescr->TDES3.R.FL_TPL  = packetLength; /* total length of the packet */
-    firstDescr->TDES3.R.TSE     = 0;            /* TCP Segmentation Disable */
-    firstDescr->TDES3.R.CIC_TPL = 3;
-    firstDescr->TDES3.R.SAIC    = 0;            /* Source Address insertion disabled */
-    firstDescr->TDES3.R.CPC     = 0;            /* CRC and PAD insertion enabled */
-
-    /* configure every other descriptor including first descriptor for the frame transmission */
+    /* Configure every descriptor explicitly from a clean state before handing it to DMA.
+     * This project places descriptors in a fixed non-cached LMU window instead of normal
+     * zero-initialized .bss, so we must not rely on any pre-existing bit values.
+     * Also disable hardware checksum insertion here because uIP already builds complete
+     * Ethernet/IP/ARP frames in software.
+     */
     for (i = 0; i < numOfDescriptors; i++)
     {
-        if (i == (numOfDescriptors - 1))
-        {
-            descr->TDES3.R.LD  = 1;                                              /* last descriptor of the frame */
-            descr->TDES2.R.IOC = 1;                                              /* last descriptor of the frame set IOC */
-            descr->TDES3.R.FD  = 0;
-            descr->TDES2.R.B1L = packetLength;
-        }
-        else
-        {
-            descr->TDES3.R.LD  = 0;
-            descr->TDES3.R.FD  = 0;
-            descr->TDES2.R.IOC = 0;                                        /* Clear the IOC bits for intermeditate buffers */
-            descr->TDES2.R.B1L = geth->txChannel[channelId].txBuf1Size;
-            packetLength      -= bufferLength;
-        }
+        uint32 thisLength = (remainingLength > bufferLength) ? bufferLength : remainingLength;
 
-        IFX_ASSERT(IFX_VERBOSE_LEVEL_ERROR, descr->TDES3.R.OWN != 1U);           /* Assert if buffers are not available for transfer */
-        descr->TDES3.R.OWN = 1U;                                                 /* release to DMA */
+        IFX_ASSERT(IFX_VERBOSE_LEVEL_ERROR, descr->TDES3.R.OWN != 1U); /* Assert if buffers are not available for transfer */
+
+        descr->TDES2.U = 0;
+        descr->TDES3.U = 0;
+        __dsync();
+
+        descr->TDES2.R.B1L       = thisLength;
+        descr->TDES2.R.VTIR      = 0;
+        descr->TDES2.R.B2L       = 0;
+        descr->TDES2.R.TTSE_TMWD = 0;
+        descr->TDES2.R.IOC       = (i == (numOfDescriptors - 1U)) ? 1U : 0U;
+
+        descr->TDES3.R.FL_TPL    = packetLength; /* total length of the packet */
+        descr->TDES3.R.TPL       = 0;
+        descr->TDES3.R.CIC_TPL   = 0;            /* checksum insertion disabled */
+        descr->TDES3.R.TSE       = 0;            /* TCP segmentation disabled */
+        descr->TDES3.R.SLOTNUM_THL = 0;
+        descr->TDES3.R.SAIC      = 0;            /* source address insertion disabled */
+        descr->TDES3.R.CPC       = 0;            /* CRC and PAD insertion enabled */
+        descr->TDES3.R.LD        = (i == (numOfDescriptors - 1U)) ? 1U : 0U;
+        descr->TDES3.R.FD        = (i == 0U) ? 1U : 0U;
+        descr->TDES3.R.CTXT      = 0;
+
+        __dsync();
+        descr->TDES3.R.OWN = 1U;                 /* release to DMA */
+        __dsync();
+
         IfxGeth_Eth_shuffleTxDescriptor(geth, channelId);
-        descr              = IfxGeth_Eth_getActualTxDescriptor(geth, channelId); /* update the descr pointer */
-        nextDescr          = descr;
+        descr     = IfxGeth_Eth_getActualTxDescriptor(geth, channelId); /* update the descr pointer */
+        nextDescr = descr;
+        remainingLength -= thisLength;
     }
 
-    firstDescr->TDES3.R.FD                = 1;          /* first descriptor of the frame */
-    geth->txChannel[channelId].txDescrPtr = firstDescr; /* point to first descriptor to initiate the transfer */
-    IfxGeth_dma_setTxDescriptorTailPointer(geth->gethSFR, channelId, (uint32)nextDescr);
-    IfxGeth_Eth_wakeupTransmitter(geth, channelId);     /* initialte the transfer */
-    geth->txChannel[channelId].txDescrPtr = nextDescr;  /* update the handle pointer to next descriptor */
+    {
+        uint32 txDescBase  = (uint32)IfxGeth_Eth_getBaseTxDescriptor(geth, channelId);
+        uint32 txRingEnd   = txDescBase + ((uint32)sizeof(IfxGeth_TxDescr) * (uint32)IFXGETH_MAX_TX_DESCRIPTORS);
+        uint32 tailKick    = (uint32)nextDescr;
 
-    geth->txChannel[channelId].txCount++;
+        geth->txChannel[channelId].txDescrPtr = firstDescr; /* point to first descriptor to initiate the transfer */
+
+
+        /* Clear sticky TX status from the previous completion/suspend cycle before
+         * advancing the tail pointer for the next packet.
+         */
+        if (IfxGeth_dma_isInterruptFlagSet(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitBufferUnavailable) != FALSE)
+        {
+            IfxGeth_dma_clearInterruptFlag(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitBufferUnavailable);
+        }
+
+        if (IfxGeth_dma_isInterruptFlagSet(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitInterrupt) != FALSE)
+        {
+            IfxGeth_dma_clearInterruptFlag(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitInterrupt);
+        }
+
+        if (IfxGeth_dma_isInterruptFlagSet(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitStopped) != FALSE)
+        {
+            IfxGeth_dma_clearInterruptFlag(geth->gethSFR, (IfxGeth_DmaChannel)channelId,
+                                           IfxGeth_DmaInterruptFlag_transmitStopped);
+        }
+
+        if (IfxGeth_mtl_isInterruptFlagSet(geth->gethSFR, (IfxGeth_MtlQueue)channelId,
+                                           IfxGeth_MtlInterruptFlag_txQueueUnderflow))
+        {
+            IfxGeth_mtl_clearInterruptFlag(geth->gethSFR, (IfxGeth_MtlQueue)channelId,
+                                           IfxGeth_MtlInterruptFlag_txQueueUnderflow);
+        }
+
+        /* Re-assert a known-good TX DMA operating mode before ringing the doorbell. */
+        geth->gethSFR->DMA_CH[channelId].TX_CONTROL.B.OSF   = 1U;
+        geth->gethSFR->DMA_CH[channelId].TX_CONTROL.B.TXPBL = 32U;
+        geth->gethSFR->MTL_TXQ0.OPERATION_MODE.B.TSF        = 1U;
+        geth->gethSFR->MTL_TXQ0.OPERATION_MODE.B.TXQEN      = 2U;
+        __dsync();
+
+        /* When the hardware still sits in the "never fetched first descriptor" state,
+         * CURRENT_APP_TXDESC can stay at 0x0. Using the ring-end boundary is a more
+         * forceful kick in that situation.
+         */
+        if ((geth->gethSFR->DMA_CH[channelId].CURRENT_APP_TXDESC.U == 0U) ||
+            (tailKick < txDescBase) || (tailKick >= txRingEnd))
+        {
+            tailKick = txRingEnd;
+        }
+
+        IfxGeth_dma_setTxDescriptorTailPointer(geth->gethSFR, channelId, tailKick);
+        __dsync();
+
+        /* Kick the TX DMA unconditionally after advancing the tail pointer.
+         * The generic wakeup helper only restarts when STATUS.TPS is set, but on this
+         * board bring-up path the channel can remain idle with ST needing a fresh kick
+         * while STATUS still reads 0. Re-assert start first, then run the normal wakeup.
+         */
+        IfxGeth_Eth_startTransmitter(geth, channelId);
+        IfxGeth_Eth_wakeupTransmitter(geth, channelId);     /* initiate / resume the transfer */
+        __dsync();
+
+        geth->txChannel[channelId].txDescrPtr = nextDescr;  /* update the handle pointer to next descriptor */
+        geth->txChannel[channelId].txCount++;
+    }
 }
 
 
@@ -882,6 +990,7 @@ void IfxGeth_Eth_setupRgmiiInputPins(IfxGeth_Eth *geth, const IfxGeth_Eth_RgmiiP
     geth->gethSFR->GPCTL.B.ALTI7 = rxd1->select;
     geth->gethSFR->GPCTL.B.ALTI8 = rxd2->select;
     geth->gethSFR->GPCTL.B.ALTI9 = rxd3->select;
+    geth->gethSFR->GPCTL.B.ALTI10 = grefClk->select;
 
     IfxPort_setPinControllerSelection(rxClk->pin.port, rxClk->pin.pinIndex);
     IfxPort_setPinControllerSelection(rxCtl->pin.port, rxCtl->pin.pinIndex);

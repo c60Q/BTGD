@@ -50,6 +50,12 @@
 /** \brief Macro for accessing the Ethernet header information in the buffer */
 #define NET_UIP_HEADER_BUF          ((struct uip_eth_hdr *)&uip_buf[0])
 
+#define NET_GARP_INITIAL_DELAY_MS    (1000u)
+#define NET_GARP_REPEAT_DELAY_MS     (3000u)
+#define NET_GARP_PACKET_LEN          (60u)
+#define NET_ARP_REQUEST              (1u)
+#define NET_ARP_REPLY                (2u)
+
 
 /****************************************************************************************
 * Local data declarations
@@ -58,6 +64,33 @@
 static unsigned long periodicTimerTimeOut;
 /** \brief Holds the time out value of the uIP ARP timer. */
 static unsigned long ARPTimerTimeOut;
+/** \brief One-shot timer for delayed gratuitous ARP transmit. */
+static unsigned long garpTimerTimeOut;
+/** \brief Number of remaining gratuitous ARP announcements to send. */
+static unsigned char garpAnnouncementsPending;
+
+#if defined(__TASKING__)
+#pragma pack 2
+#endif
+struct net_arp_hdr
+{
+  struct uip_eth_hdr ethhdr;
+  u16_t hwtype;
+  u16_t protocol;
+  u8_t hwlen;
+  u8_t protolen;
+  u16_t opcode;
+  struct uip_eth_addr shwaddr;
+  u16_t sipaddr[2];
+  struct uip_eth_addr dhwaddr;
+  u16_t dipaddr[2];
+};
+#if defined(__TASKING__)
+#pragma pack default
+#endif
+
+static void NetSendGratuitousArpFrame(unsigned short opcode);
+static void NetHandleGratuitousArpAnnouncement(void);
 
 #if (BOOT_COM_NET_DHCP_ENABLE > 0) // now set it as false
 /** \brief Holds the MAC address which is used by the DHCP client. */
@@ -81,6 +114,8 @@ unsigned char NetInit(void)
 	/* initialize the timer variables */
 	periodicTimerTimeOut = TimerGet() + NET_UIP_PERIODIC_TIMER_MS;
 	ARPTimerTimeOut = TimerGet() + NET_UIP_ARP_TIMER_MS;
+	garpAnnouncementsPending = 2u;
+	garpTimerTimeOut = TimerGet() + NET_GARP_INITIAL_DELAY_MS;
 	/* initialize the uIP TCP/IP stack. */
 	uip_init();
 	uip_arp_init();
@@ -123,6 +158,70 @@ unsigned char NetInit(void)
 	return boot_TRUE;
 } /*** end of NetInit ***/
 
+
+static void NetSendGratuitousArpFrame(unsigned short opcode)
+{
+	struct net_arp_hdr *arp;
+	unsigned long i;
+	const char *msg;
+
+	memset(uip_buf, 0, UIP_BUFSIZE + 2);
+	arp = (struct net_arp_hdr *)&uip_buf[0];
+
+	for (i = 0; i < 6u; i++)
+	{
+		arp->ethhdr.dest.addr[i] = 0xFFu;
+		arp->dhwaddr.addr[i] = 0x00u;
+		arp->shwaddr.addr[i] = uip_ethaddr.addr[i];
+		arp->ethhdr.src.addr[i] = uip_ethaddr.addr[i];
+	}
+
+	arp->ethhdr.type = htons(UIP_ETHTYPE_ARP);
+	arp->hwtype      = HTONS(1u);
+	arp->protocol    = HTONS(UIP_ETHTYPE_IP);
+	arp->hwlen       = 6u;
+	arp->protolen    = 4u;
+	arp->opcode      = HTONS(opcode);
+	arp->sipaddr[0]  = uip_hostaddr[0];
+	arp->sipaddr[1]  = uip_hostaddr[1];
+	arp->dipaddr[0]  = uip_hostaddr[0];
+	arp->dipaddr[1]  = uip_hostaddr[1];
+
+	uip_len = NET_GARP_PACKET_LEN;
+	msg = (opcode == NET_ARP_REPLY) ? "GARP reply send" : "GARP request send";
+	debugPrintOnce = true;
+	Debug_Print_Out(msg, 0u, 0, 0u, dbug_num_type_str);
+	debugPrintOnce = true;
+	Debug_Print_Data_Array("GARP src mac = ", &uip_ethaddr.addr[0], 6u);
+	debugPrintOnce = true;
+	Debug_Print_Out("GARP opcode = ", (uint32_t)opcode, 0, 0u, dbug_num_type_U32);
+	debugPrintOnce = true;
+	Debug_Print_Out("GARP ip = ", 0u, 0, 0u, dbug_num_type_str);
+	Debug_Print_Out("  ip[0] = ", (uint32_t)((uip_hostaddr[0] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
+	Debug_Print_Out("  ip[1] = ", (uint32_t)(uip_hostaddr[0] & 0xFFu), 0, 0u, dbug_num_type_U32);
+	Debug_Print_Out("  ip[2] = ", (uint32_t)((uip_hostaddr[1] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
+	Debug_Print_Out("  ip[3] = ", (uint32_t)(uip_hostaddr[1] & 0xFFu), 0, 0u, dbug_num_type_U32);
+	netdev_send();
+	uip_len = 0u;
+}
+
+static void NetHandleGratuitousArpAnnouncement(void)
+{
+	if ((garpAnnouncementsPending > 0u) && (TimerGet() >= garpTimerTimeOut))
+	{
+		if (garpAnnouncementsPending == 2u)
+		{
+			NetSendGratuitousArpFrame(NET_ARP_REQUEST);
+			garpTimerTimeOut = TimerGet() + NET_GARP_REPEAT_DELAY_MS;
+		}
+		else
+		{
+			NetSendGratuitousArpFrame(NET_ARP_REPLY);
+			garpTimerTimeOut = 0u;
+		}
+		garpAnnouncementsPending--;
+	}
+}
 
 void NetTransmitPacket(boot_int8u *data, boot_int16u len)
 {
@@ -386,6 +485,8 @@ void NetTask(void)
   unsigned long connection;
   unsigned long packetLen;
   
+  NetHandleGratuitousArpAnnouncement();
+
   /* check for an RX packet and read it. */
   packetLen = netdev_read();
   if (packetLen > 0)

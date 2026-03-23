@@ -39,6 +39,24 @@
  */
 
 boot_state_t flowStepStatus = boot_power_on_init;
+
+static const char *Boot_State_To_String(boot_state_t state)
+{
+	switch(state){
+		case boot_power_on_init: return "boot_power_on_init";
+		case boot_image_data_check: return "boot_image_data_check";
+		case boot_command_judge: return "boot_command_judge";
+		case boot_enable_eth_transceiver: return "boot_enable_eth_transceiver";
+		case boot_receive_image_end_crc: return "boot_receive_image_end_crc";
+		case boot_new_image_copy: return "boot_new_image_copy";
+		case boot_wait_reply_to_boot_up: return "boot_wait_reply_to_boot_up";
+		case boot_loop_stay: return "boot_loop_stay";
+		case boot_try_another_app: return "boot_try_another_app";
+		case boot_eth_create_retry: return "boot_eth_create_retry";
+		case boot_reset: return "boot_reset";
+		default: return "boot_state_unknown";
+	}
+}
 boot_flow_Flag_t flowCtrlFlag = {0x00};
 static bool g_bcbWriteFail = false;
 static uint8_t retry_eth = 0;
@@ -890,11 +908,13 @@ void Boot_Flow_Handler(void)
 		}
 		s_prev_state = flowStepStatus;
 		debugPrintOnce = true;
+		Debug_Print_Force_Out("{BOOT state}", 0u, 0, 0u, dbug_num_type_str);
+		Debug_Print_Force_Out(Boot_State_To_String(flowStepStatus), 0u, 0, 0u, dbug_num_type_str);
 	}
 
     switch(flowStepStatus){
         case boot_power_on_init:
-			Debug_Print_Out("{MCU power on init}", 0u, 0, 0u, dbug_num_type_str);
+			Debug_Print_Force_Out("{MCU power on init}", 0u, 0, 0u, dbug_num_type_str);
 			/***** Can add something want to do before check image data *****/
 #if 1	//qqqq
 			flowStepStatus = ETH_Create() ? boot_enable_eth_transceiver : boot_eth_create_retry;

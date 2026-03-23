@@ -1426,6 +1426,15 @@ section_layout :vtc:linear
                 }
                 group (ordered, attributes=rw, run_addr=mem:lmuram LCF_ACTIVE_APP_INITROM_ATTR)
                 {
+                    /* Explicitly place GETH DMA descriptors and Ethernet frame buffers into globally
+                     * accessible LMU RAM. The TASKING section pragma in this project does not reliably
+                     * rename these object sections, so match the concrete section names emitted by the
+                     * current toolchain as seen in the .map file.
+                     */
+                    select ".bss.IfxGeth_Eth.IfxGeth_Eth_rxDescrList";
+                    select ".bss.IfxGeth_Eth.IfxGeth_Eth_txDescrList";
+                    select ".bss.netdev.channel0RxBuffer1";
+                    select ".bss.netdev.channel0TxBuffer1";
                     select "(.data.lmudata|.data.lmudata.*)";
                     select "(.bss.lmubss|.bss.lmubss.*)";
                 }

@@ -34,6 +34,73 @@ uint32 IfxGeth_Eth_Phy_88E1512_iPhyInitDone = 0;
 /*-------------------------Function Prototypes--------------------------------*/
 /******************************************************************************/
 
+
+static void IfxGeth_Eth_Phy_88E1512_debug_print_hex(const char *prefix, uint32 value)
+{
+    debugPrintOnce = true;
+    Debug_Print_Out(prefix, 0u, 0, value, dbug_num_type_HEX32);
+}
+
+static void IfxGeth_Eth_Phy_88E1512_debug_print_u32(const char *prefix, uint32 value)
+{
+    debugPrintOnce = true;
+    Debug_Print_Out(prefix, value, 0, 0u, dbug_num_type_U32);
+}
+
+static void IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs(uint32 phy_id1, uint32 phy_id2)
+{
+    uint32 bmcr = 0u;
+    uint32 bmsr1 = 0u;
+    uint32 bmsr2 = 0u;
+    uint32 cssr1 = 0u;
+
+    IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &bmcr);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr1);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr2);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_CSSR1, &cssr1);
+
+    IfxGeth_Eth_Phy_88E1512_debug_print_u32("PHYADDR = ", PHY_ADDR);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("PHYID1 = 0x", phy_id1);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("PHYID2 = 0x", phy_id2);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMCR = 0x", bmcr);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMSR1 = 0x", bmsr1);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMSR2 = 0x", bmsr2);
+    IfxGeth_Eth_Phy_88E1512_debug_print_hex("CSSR1 = 0x", cssr1);
+}
+
+static void IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs_if_changed(void)
+{
+    static uint8 debugSnapshotValid = 0u;
+    static uint32 lastBmcr = 0u;
+    static uint32 lastBmsr1 = 0u;
+    static uint32 lastBmsr2 = 0u;
+    static uint32 lastCssr1 = 0u;
+    uint32 bmcr = 0u;
+    uint32 bmsr1 = 0u;
+    uint32 bmsr2 = 0u;
+    uint32 cssr1 = 0u;
+
+    IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &bmcr);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr1);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr2);
+    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_CSSR1, &cssr1);
+
+    if ((debugSnapshotValid == 0u) || (bmcr != lastBmcr) || (bmsr1 != lastBmsr1) || (bmsr2 != lastBmsr2) || (cssr1 != lastCssr1))
+    {
+        IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMCR = 0x", bmcr);
+        IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMSR1 = 0x", bmsr1);
+        IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMSR2 = 0x", bmsr2);
+        IfxGeth_Eth_Phy_88E1512_debug_print_hex("CSSR1 = 0x", cssr1);
+        lastBmcr = bmcr;
+        lastBmsr1 = bmsr1;
+        lastBmsr2 = bmsr2;
+        lastCssr1 = cssr1;
+        debugSnapshotValid = 1u;
+    }
+}
+
 /******************************************************************************/
 /*-------------------------Function Implementations---------------------------*/
 /******************************************************************************/
@@ -77,10 +144,10 @@ uint32  IfxGeth_Eth_Phy_88E1512_init(void)
         IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);  // 確保在 Page 0
         IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_PHYID1, &phy_id1);
         IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_PHYID2, &phy_id2);
+        IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs(phy_id1, phy_id2);
         if ((phy_id1 == 0xFFFF) || (phy_id1 == 0x0000)) {
             //printf("PHY 88E1512 not detected!\n");
-            debugPrintOnce = true;//qqqq
-			Debug_Print_Out("phy F", 0, 0, 0, dbug_num_type_str);
+            Debug_Print_Force_Out("phy F", 0, 0, 0, dbug_num_type_str);
             return 1;  // 錯誤代碼 1：PHY 未偵測到
         }
 
@@ -111,6 +178,40 @@ uint32  IfxGeth_Eth_Phy_88E1512_init(void)
         IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, 0x10, regVal);
         IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, 0x10, &temp);
 
+        /* Configure RGMII clock skew on PHY side.
+         * Current symptom is link-up but no RX frames during ping/ARP,
+         * which is consistent with RGMII timing being off.
+         */
+        IfxGeth_Eth_Phy_88E1512_set_mdio_page(2);
+        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MACCR2, &temp);
+        regVal = (uint16)(temp & 0xFFFF);
+        regVal |= (uint16)((1u << 5) | (1u << 4));  /* enable RXC/TXC internal delay */
+        IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MACCR2, regVal);
+        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MACCR2, &temp);
+        IfxGeth_Eth_Phy_88E1512_debug_print_hex("MACCR2 = 0x", temp);//qqqq
+#if 0//qqqq
+		/* Page 2, Reg 21: RGMII timing control */
+		IfxGeth_Eth_Phy_88E1512_set_mdio_page(2);
+		IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MACCR2, &temp);
+		regVal = (uint16)(temp & 0xFFFF);
+
+		/* test: enable PHY-side RX/TX clock delay */
+		regVal |= (1u << 5);   /* RX_CLK delay */
+		regVal |= (1u << 4);   /* TX_CLK delay */
+
+		IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MACCR2, regVal);
+
+		/* back to page 0 and soft reset */
+		IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+		IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &temp);
+		regVal = (uint16)(temp & 0xFFFF);
+		regVal |= 0x8000;
+		IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, regVal);
+
+		do {
+		    IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &temp);
+		} while (temp & 0x8000);
+#endif
 #if 0
         // === Step 3: Reset(page-0)
         regVal |= 0x8000;
@@ -198,41 +299,76 @@ uint32  IfxGeth_Eth_Phy_88E1512_init(void)
         } while (temp & 0x8000);
 #endif
 
-        // === Step 8: Link up 檢查 ===
-        uint32 timeout = 100000;
+        /* Explicitly advertise common copper capabilities and restart auto-negotiation.
+         * Previous logs showed BMCR = 0x0 and CSSR1 = 0xC08 (10M/half), which strongly
+         * suggests the PHY was left in a forced/limited mode. For ping/ARP reliability,
+         * let the PHY negotiate a normal link first.
+         */
+        {
+            uint16 anar_val;
+            uint16 gbcr_val;
+
+            IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+
+            /* Advertise 10/100 half/full, selector = IEEE 802.3. */
+            anar_val = 0x01E1u;
+            IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_ANAR, anar_val);
+            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_ANAR, &temp);
+            IfxGeth_Eth_Phy_88E1512_debug_print_hex("ANAR = 0x", temp);//qqqq
+
+            /* Test patch: temporarily disable 1000BASE-T advertisement.
+             * Current logs show PHY link-up at 1000M/full but absolutely no RX frames.
+             * For the next validation, force negotiation to top out at 100M so we can
+             * distinguish a Gigabit RGMII timing issue from a generic MAC/DMA problem.
+             */
+            gbcr_val = 0x0000u;
+            IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_GBCR, gbcr_val);
+            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_GBCR, &temp);
+            IfxGeth_Eth_Phy_88E1512_debug_print_hex("GBCR = 0x", temp);//qqqq
+
+            /* Enable and restart auto-negotiation. */
+            regVal = 0x1200u;
+            IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, regVal);
+            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &temp);
+            IfxGeth_Eth_Phy_88E1512_debug_print_hex("BMCR restart = 0x", temp);//qqqq
+        }
+
+        // === Step 8: Link up + speed/duplex resolved 檢查 ===
+        uint32 timeout = 500000;
+        IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
         do {
+            uint32 bmsr_now;
+            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr_now);
+            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr_now);
             IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_CSSR1, &temp);
             timeout--;
-        } while ((!(temp & (1 << 10))) && timeout);  // Bit 10 = link up
+        } while ((((temp & (1u << 10)) == 0u) || ((temp & (1u << 11)) == 0u)) && timeout);  // Bit10=link up, Bit11=resolved
 
         if (timeout == 0)
         {
-            // 連線失敗，不設定 LED，
-            // TODO: Add error log here, or retry mechanism if needed
+            /* 連線尚未完成協商，不設定 LED，後續由 polling 持續追蹤 */
+            IfxGeth_Eth_Phy_88E1512_debug_print_hex("CSSR1 timeout = 0x", temp);//qqqq
+            IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs_if_changed();//qqqq
             timeout = 100000;
         }
         else
         {
+            IfxGeth_Eth_Phy_88E1512_debug_print_hex("CSSR1 ready = 0x", temp);//qqqq
+            IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs_if_changed();//qqqq
             uint16 led_config_value = 0x0000;
             IfxGeth_Eth_Phy_88E1512_set_mdio_page(3);
             IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_LED_FCN_CTRL, &temp);
             led_config_value = (uint16)(temp & 0xFFFF);
-            led_config_value &= ~0x0FFF;  // 清除 bit-11~0
-            led_config_value |= 0x0125; //LED[2]: On - Link, Blink -Activity, Off - No Link
+            led_config_value &= (uint16)~0x0FFFu;  // 清除 bit-11~0
+            led_config_value |= 0x0125u; //LED[2]: On - Link, Blink -Activity, Off - No Link
                                         //LED[1]: On - Link, Blink - Receive, Off - No Link
                                         //LED[0]: On -Transmit, Off - No Transmit
             IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_LED_FCN_CTRL, led_config_value);
 
+            /* Do not reset BMCR here. The link was already up/resolved and another
+             * software reset can drop the copper link right before polling starts.
+             */
             IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
-            IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &temp);
-            // ===Reset
-            regVal = (uint16)(temp & 0xFFFF);
-            regVal |= 0x8000;
-            IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, regVal);
-            // Wait reset finish
-            do {
-                IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMCR, &temp);
-            } while (temp & 0x8000);
 
 #if 0
             // ===Packet Generate part-1(page-18)
@@ -268,8 +404,9 @@ uint32  IfxGeth_Eth_Phy_88E1512_init(void)
 #endif
 
         }
-		debugPrintOnce = true;//qqqq
-		Debug_Print_Out("phy T", 0, 0, 0, dbug_num_type_str);
+        IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+        IfxGeth_Eth_Phy_88E1512_iPhyInitDone = 1;
+		Debug_Print_Force_Out("phy T", 0, 0, 0, dbug_num_type_str);
 return 0;
 }
 
@@ -301,66 +438,55 @@ void IfxGeth_Eth_Phy_88E1512_write_mdio_reg(uint32 layeraddr, uint32 regaddr, ui
 }
 void IfxGeth_Eth_Phy_88E1512_set_mdio_page(uint32 page)
 {
-    //    IfxGeth_Eth_Phy_88E1512_write_mdio_reg(0, 0x1F, page);
-        IfxGeth_Eth_Phy_88E1512_write_mdio_reg(0, 0x16, page);
+    /* Page Address Register lives on page 0, register 0x16. */
+    IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_PAGSR, page);
 }
 
 uint32 IfxGeth_Eth_Phy_88E1512_link_status(void)
 {
     Ifx_GETH_MAC_PHYIF_CONTROL_STATUS link_status;
-    uint32 value;
+    uint32 cssr1;
+    uint32 bmsr1;
+    uint32 bmsr2;
+    uint32 speed_bits;
+
     link_status.U = 0;
 
-    // if (IfxGeth_Eth_Phy_88E1512_iPhyInitDone) 
+    if (IfxGeth_Eth_Phy_88E1512_iPhyInitDone)
     {
-        /* 1. 切換到 Page 0 (Copper Register Bank) */
-        /* 88E1512 的狀態暫存器位於 Page 0 */
-        IfxGeth_Eth_Phy_88E1512_write_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_PAGSR, 0);
+        /* All status registers used here are on page 0. */
+        IfxGeth_Eth_Phy_88E1512_set_mdio_page(0);
+        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr1);
+        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_BMSR, &bmsr2);
+        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_CSSR1, &cssr1);
+        IfxGeth_Eth_Phy_88E1512_debug_dump_link_regs_if_changed();//qqqq
 
-        /* 2. 讀取 Register 17 (CSSR1) */
-        /* 這個暫存器包含了解析後的 Speed/Duplex/Link 資訊 */
-        IfxGeth_Eth_Phy_88E1512_read_mdio_reg(PHY_ADDR, IFXGETH_PHY_88E1512_MDIO_CSSR1, &value);
-
-        /* 3. 解析 Link Status (Bit 10) */
-        /* Bit 10: Real Time Link Status (1=Link Up, 0=Link Down) */
-        if (value & (1 << 10))
+        /* Use the standard BMSR link bit as the primary link source.
+         * BMSR bit2 is latch-low, so the second read reflects the current state.
+         */
+        if ((bmsr2 & PHY_LINK_STATUS) != 0u)
         {
-            link_status.B.LNKSTS = 1; // 設定 Link Up
+            link_status.B.LNKSTS = 1u;
 
-            /* 4. 解析 Duplex Mode (Bit 13) */
-            /* Bit 13: Duplex Resolved (1=Full Duplex, 0=Half Duplex) */
-            if (value & (1 << 13))
+            /* CSSR1 duplex/speed are only valid after bit11 resolved is set. */
+            if ((cssr1 & (1u << 11)) != 0u)
             {
-                link_status.B.LNKMOD = 1; // Full Duplex
-            }
-            else
-            {
-                link_status.B.LNKMOD = 0; // Half Duplex
-            }
+                link_status.B.LNKMOD = ((cssr1 & (1u << 13)) != 0u) ? 1u : 0u;
 
-            /* 5. 解析 Speed (Bit 15:14) */
-            /* Bits 15:14: Speed Resolved */
-            /* 00 = 10 Mbps */
-            /* 01 = 100 Mbps */
-            /* 10 = 1000 Mbps */
-            uint32 speed_bits = (value >> 14) & 0x03;
-
-            if (speed_bits == 0x00)
-            {
-                link_status.B.LNKSPEED = 0; // 10 Mbps
+                speed_bits = (cssr1 >> 14) & 0x03u;
+                if (speed_bits == 0x01u)
+                {
+                    link_status.B.LNKSPEED = 1u; /* 100 Mbps */
+                }
+                else if (speed_bits == 0x02u)
+                {
+                    link_status.B.LNKSPEED = 2u; /* 1000 Mbps */
+                }
+                else
+                {
+                    link_status.B.LNKSPEED = 0u; /* 10 Mbps or unresolved/other */
+                }
             }
-            else if (speed_bits == 0x01)
-            {
-                link_status.B.LNKSPEED = 1; // 100 Mbps
-            }
-            else if (speed_bits == 0x02)
-            {
-                link_status.B.LNKSPEED = 2; // 1000 Mbps (Infineon GETH 定義通常 2 或 3 表 1G)
-            }
-        }
-        else
-        {
-            /* Link Down: 保持 link_status.U = 0 */
         }
     }
 

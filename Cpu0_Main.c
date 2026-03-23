@@ -102,6 +102,7 @@ void core0_main(void)
 		
 		/* update the millisecond timer */
 		TimerUpdate();
+		Boot_Debug_Uart_Counter_Test();
 
 		Boot_Flow_Handler();
 		if(flowCtrlFlag.bits.netTaskEnable){

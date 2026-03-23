@@ -77,6 +77,7 @@ void Bootloader_Receive_Data_Handler(uip_tcp_appstate_t *s, boot_int8u *data, bo
 void Active_Send_Request_Set(active_send_pkg_state_t request);
 void DebugUart3_init(void);
 void Debug_Print_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32, debuf_num_type_t d_type);
+void Debug_Print_Force_Out(const char *s, uint32_t num_U32, int32_t num_I32, uint32_t num_HEX32, debuf_num_type_t d_type);
 void Debug_Print_Data_Array(const char *prefix, const uint8_t *data, uint32_t len);
 void Boot_Debug_Uart_Counter_Test(void);
 
