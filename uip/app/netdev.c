@@ -173,6 +173,9 @@ static void netdev_toggle_rx_acceptance_mode(const char *reason);
 static void netdev_kick_rx_tail_pointer(uint8 verbose, const char *reason);
 static void netdev_prepare_tx_channel(void);
 static void netdev_force_rx_queue_path_config(uint8 verbose);
+static uint32 netdev_get_rxq0_operation_mode_expected(void);
+static void netdev_force_rxq0_operation_mode(uint8 verbose, const char *reason);
+static void netdev_debug_dump_rxq0_operation_mode(const char *label);
 static void netdev_debug_dump_rx_queue_path(const char *label);
 static void netdev_debug_dump_rx_current_buffer_head(const char *label);
 static void netdev_debug_dump_rx_low_level_state(const char *label);
@@ -249,6 +252,66 @@ static void netdev_debug_dump_mac_programming(const char *label)
 }
 
 
+static uint32 netdev_get_rxq0_operation_mode_expected(void)
+{
+  uint32 omr;
+
+  omr = 0u;
+  omr |= (uint32)0u; /* RTC = 00b */
+  omr |= (1u << 3);  /* FUP */
+  omr |= (1u << 4);  /* FEP */
+  omr |= (1u << 5);  /* RSF */
+  omr |= (1u << 6);  /* DIS_TCP_EF */
+  omr |= ((uint32)IfxGeth_QueueSize_2560Bytes << 20);
+
+  return omr;
+}
+
+
+static void netdev_debug_dump_rxq0_operation_mode(const char *label)
+{
+  uint32 omr;
+
+  omr = g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U;
+
+  debugPrintOnce = true;
+  Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
+  debugPrintOnce = true;
+  Debug_Print_Out("  MTL_RXQ0_OMR = 0x", 0u, 0, omr, dbug_num_type_HEX32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 RTC = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RTC, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 FUP = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.FUP, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 FEP = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.FEP, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 RSF = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RSF, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 DIS_TCP_EF = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.DIS_TCP_EF, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RXQ0 RQS = ", (uint32)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RQS, 0, 0u, dbug_num_type_U32);
+}
+
+
+static void netdev_force_rxq0_operation_mode(uint8 verbose, const char *reason)
+{
+  uint32 expectedOmr;
+
+  expectedOmr = netdev_get_rxq0_operation_mode_expected();
+  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U = expectedOmr;
+  __dsync();
+
+  if (verbose != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out(reason, 0u, 0, 0u, dbug_num_type_str);
+    debugPrintOnce = true;
+    Debug_Print_Out("  RXQ0 OMR expected = 0x", 0u, 0, expectedOmr, dbug_num_type_HEX32);
+    netdev_debug_dump_rxq0_operation_mode("  RXQ0 OMR readback");
+  }
+}
+
+
 static void netdev_debug_dump_rx_queue_path(const char *label)
 {
   debugPrintOnce = true;
@@ -278,8 +341,7 @@ static void netdev_debug_dump_rx_queue_path(const char *label)
   Debug_Print_Out("  MAC_HW_FEATURE2 = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_HW_FEATURE2.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_HW_FEATURE2 RXQCNT = ", (uint32)g_IfxGeth.gethSFR->MAC_HW_FEATURE2.B.RXQCNT, 0, 0u, dbug_num_type_U32);
-  debugPrintOnce = true;
-  Debug_Print_Out("  MTL_RXQ0_OMR = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U, dbug_num_type_HEX32);
+  netdev_debug_dump_rxq0_operation_mode("  RXQ0 OMR decode");
   debugPrintOnce = true;
   Debug_Print_Out("  MTL_RXQ0_DBG = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ0.DEBUG.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
@@ -524,11 +586,12 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.B.RXQ0EN = 2u;
   g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0MDMACH = 0u;
 
-  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RSF = 1u;
-  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.FEP = 1u;
-  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.FUP = 1u;
-  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.DIS_TCP_EF = 1u;
-  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RQS = (uint32)IfxGeth_QueueSize_2560Bytes;
+  /* Hard-program RXQ0 operation mode instead of relying on multiple bitfield
+   * writes that can be hard to reason about once other init paths have run.
+   * We still read back and decode the fields later to confirm the hardware kept
+   * the intended Store-and-Forward / forwarding behaviour.
+   */
+  g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U = netdev_get_rxq0_operation_mode_expected();
 
   IfxGeth_mac_setMacAddress(g_IfxGeth.gethSFR, (uint8 *)&macAddress.addr[0]);
 
@@ -592,6 +655,7 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
 
   if (verbose != 0u)
   {
+    netdev_force_rxq0_operation_mode(1u, "RXQ0 OMR forced in queue path config");
     netdev_debug_dump_rx_queue_path("RX queue path config");
   }
 }
@@ -934,6 +998,7 @@ static void netdev_recover_rx_channel_without_rearm(void)
   __dsync();
 
   netdev_force_rx_queue_path_config(0u);
+  netdev_force_rxq0_operation_mode(1u, "RX recovery OMR pre-start");
   netdev_program_rx_ring_registers(g_netdevRxTailUseOnePastLast);
 
   if (IfxGeth_dma_isInterruptFlagSet(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_receiveBufferUnavailable) != FALSE)
@@ -958,6 +1023,7 @@ static void netdev_recover_rx_channel_without_rearm(void)
 
   __dsync();
   IfxGeth_Eth_startReceivers(&g_IfxGeth, 1u);
+  netdev_force_rxq0_operation_mode(1u, "RX recovery OMR post-start");
   netdev_kick_rx_tail_pointer(0u, "RX recovery post-start tail kick");
   __dsync();
 }
@@ -1123,6 +1189,9 @@ static void netdev_force_rx_quiet_summary(const char *reason)
   Debug_Print_Force_Out("RX quiet RXALIGNERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_ALIGNMENT_ERROR_PACKETS.B.RXALGNERR, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXLENERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_LENGTH_ERROR_PACKETS.B.RXLENERR, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXRCVERR = ", (uint32_t)g_IfxGeth.gethSFR->RX_RECEIVE_ERROR_PACKETS.B.RXRCVERR, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet RXQ0_OMR = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U, dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RX quiet RXQ0_RSF = ", (uint32_t)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RSF, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet RXQ0_RTC = ", (uint32_t)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RTC, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet CUR_APP_RXDESC = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet SW_RXDESC = 0x", 0u, 0, (uint32)swDescriptor, dbug_num_type_HEX32);
 }
@@ -1156,13 +1225,16 @@ static void netdev_force_rx_rearm(void)
 
   rxTail = netdev_get_rx_tail_pointer_value(g_netdevRxTailUseOnePastLast);
   IfxGeth_dma_setRxDescriptorListAddress(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, rxDescBase);
-  IfxGeth_dma_setRxDescriptorTailPointer(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, rxTail);
   IfxGeth_dma_setRxDescriptorRingLength(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, (IFXGETH_MAX_RX_DESCRIPTORS - 1u));
   IfxGeth_mtl_enableRxQueue(g_IfxGeth.gethSFR, IfxGeth_RxMtlQueue_0);
   __dsync();
 
   netdev_force_rx_queue_path_config(0u);
+  netdev_force_rxq0_operation_mode(1u, "RXQ0 OMR forced pre-start");
+  IfxGeth_dma_setRxDescriptorTailPointer(g_IfxGeth.gethSFR, IfxGeth_RxDmaChannel_0, rxTail);
+  __dsync();
   IfxGeth_Eth_startReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
+  netdev_force_rxq0_operation_mode(1u, "RXQ0 OMR forced post-start");
   netdev_kick_rx_tail_pointer(1u, "RX rearm post-start tail kick");
 
   debugPrintOnce = true;
