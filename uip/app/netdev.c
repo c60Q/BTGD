@@ -170,6 +170,7 @@ static void netdev_force_rx_quiet_summary(const char *reason);
 static void netdev_force_rx_rearm(void);
 static void netdev_force_tx_rearm(void);
 static void netdev_toggle_rx_acceptance_mode(const char *reason);
+static void netdev_kick_rx_tail_pointer(uint8 verbose, const char *reason);
 static void netdev_prepare_tx_channel(void);
 static void netdev_force_rx_queue_path_config(uint8 verbose);
 static void netdev_debug_dump_rx_queue_path(const char *label);
@@ -957,7 +958,7 @@ static void netdev_recover_rx_channel_without_rearm(void)
 
   __dsync();
   IfxGeth_Eth_startReceivers(&g_IfxGeth, 1u);
-  IfxGeth_Eth_wakeupReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
+  netdev_kick_rx_tail_pointer(0u, "RX recovery post-start tail kick");
   __dsync();
 }
 
@@ -1033,6 +1034,68 @@ static void netdev_toggle_rx_acceptance_mode(const char *reason)
   netdev_force_rx_queue_path_config(1u);
 }
 
+static void netdev_kick_rx_tail_pointer(uint8 verbose, const char *reason)
+{
+  uint32 finalTail;
+  uint32 tempTail;
+
+  finalTail = netdev_get_rx_tail_pointer_value(g_netdevRxTailUseOnePastLast);
+  tempTail = netdev_get_rx_tail_pointer_value((g_netdevRxTailUseOnePastLast == 0u) ? 1u : 0u);
+
+  if (tempTail == finalTail)
+  {
+    tempTail = finalTail - (uint32)sizeof(IfxGeth_RxDescr);
+  }
+
+  if (verbose != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RX tail kick reason", 0u, 0, 0u, dbug_num_type_str);
+    debugPrintOnce = true;
+    Debug_Print_Out(reason, 0u, 0, 0u, dbug_num_type_str);
+    debugPrintOnce = true;
+    Debug_Print_Out("RXDESC_TAIL pre-start = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
+  }
+
+  __dsync();
+  g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U = tempTail;
+  __dsync();
+
+  if (verbose != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RXDESC_TAIL kick-temp = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
+  }
+
+  IfxGeth_Eth_wakeupReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
+  __dsync();
+
+  g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U = finalTail;
+  __dsync();
+
+  if (verbose != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RXDESC_TAIL kick-final = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
+  }
+
+  IfxGeth_Eth_wakeupReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
+  __dsync();
+
+  if (verbose != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RX_CONTROL after SR = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.U, dbug_num_type_HEX32);
+    debugPrintOnce = true;
+    Debug_Print_Out("DMA_CH0_STATUS after kick = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+    debugPrintOnce = true;
+    Debug_Print_Out("DMA_DEBUG_STATUS0 after kick = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_DEBUG_STATUS0.U, dbug_num_type_HEX32);
+    debugPrintOnce = true;
+    Debug_Print_Out("MTL_RXQ0_DEBUG after kick = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ0.DEBUG.U, dbug_num_type_HEX32);
+  }
+}
+
+
 static void netdev_force_rx_quiet_summary(const char *reason)
 {
   volatile IfxGeth_RxDescr *swDescriptor;
@@ -1100,7 +1163,7 @@ static void netdev_force_rx_rearm(void)
 
   netdev_force_rx_queue_path_config(0u);
   IfxGeth_Eth_startReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
-  IfxGeth_Eth_wakeupReceiver(&g_IfxGeth, IfxGeth_RxDmaChannel_0);
+  netdev_kick_rx_tail_pointer(1u, "RX rearm post-start tail kick");
 
   debugPrintOnce = true;
   Debug_Print_Out("RX ring rearmed", 0u, 0, 0u, dbug_num_type_str);
@@ -1634,6 +1697,10 @@ unsigned int netdev_read(void)
         }
         else
         {
+          if ((rxStallDmaStat & 0x00000100u) != 0u)
+          {
+            netdev_force_rx_quiet_summary("RX stall RPS=1 before targeted kick");
+          }
           netdev_recover_rx_channel_without_rearm();
         }
       }
@@ -1692,6 +1759,11 @@ unsigned int netdev_read(void)
           }
           else
           {
+            if ((g_IfxGeth.gethSFR->DMA_CH[0].STATUS.B.RPS != 0u) ||
+                (g_IfxGeth.gethSFR->DMA_DEBUG_STATUS0.B.RPS0 != 0u))
+            {
+              netdev_force_rx_quiet_summary("RX MAC-only RPS before targeted kick");
+            }
             netdev_recover_rx_channel_without_rearm();
           }
 
