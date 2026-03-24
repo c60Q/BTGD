@@ -99,6 +99,13 @@ END_DATA_SECTION
 #define NETDEV_GETH_TXDESC_BASE_ADDR   NETDEV_GETH_LMU_CACHED_TO_NONCACHED(NETDEV_GETH_TXDESC_SYMBOL_ADDR)
 #define NETDEV_GETH_RXBUF_BASE_ADDR    NETDEV_GETH_LMU_CACHED_TO_NONCACHED(NETDEV_GETH_RXBUF_SYMBOL_ADDR)
 #define NETDEV_GETH_TXBUF_BASE_ADDR    NETDEV_GETH_LMU_CACHED_TO_NONCACHED(NETDEV_GETH_TXBUF_SYMBOL_ADDR)
+/* Keep CPU-side accesses on the non-cached 0xB... aliases, but let the RX DMA
+ * itself target the linker-assigned system addresses for descriptor writes and
+ * frame data writes. TX currently remains on the non-cached aliases because TX
+ * fetch already works and we want to isolate the RX write path only.
+ */
+#define NETDEV_GETH_RXDESC_DMA_ADDR    NETDEV_GETH_RXDESC_SYMBOL_ADDR
+#define NETDEV_GETH_RXBUF_DMA_ADDR     NETDEV_GETH_RXBUF_SYMBOL_ADDR
 #define NETDEV_GETH_RXDESC_TOTAL_SIZE  ((uint32)sizeof(IfxGeth_Eth_rxDescrList[0][0]))
 #define NETDEV_GETH_TXDESC_TOTAL_SIZE  ((uint32)sizeof(IfxGeth_Eth_txDescrList[0][0]))
 #define NETDEV_GETH_RXBUF_TOTAL_SIZE   ((uint32)sizeof(g_netdevGethRxBuffers))
@@ -190,6 +197,7 @@ static void netdev_debug_dump_rx_low_level_state(const char *label);
 static void netdev_debug_dump_rx_queue_dma_matrix(const char *label);
 static void netdev_debug_dump_rx_packet_counters(const char *label);
 static void netdev_debug_dump_rx_buffer_window(const char *label, uint32 bufferAddr);
+static void netdev_debug_dump_dma_target_aliases(const char *label);
 static void netdev_debug_dump_rx_buffer_ring_heads(const char *label, uint32 count);
 static void netdev_debug_dump_mac_dma_counters(void);
 static void netdev_debug_dump_mac_programming(const char *label);
@@ -204,6 +212,7 @@ static void netdev_debug_dump_tx_descriptor(const char *label, volatile IfxGeth_
 static volatile IfxGeth_RxDescr *netdev_find_completed_rx_descriptor(void);
 static uint8 netdev_rx_dma_needs_recovery(void);
 static void netdev_recover_rx_channel_without_rearm(void);
+static void netdev_clear_rx_dma_sticky_status(const char *reason);
 
 
 static volatile IfxGeth_RxDescr *netdev_get_actual_rx_descriptor_nc(void)
@@ -263,6 +272,15 @@ static void netdev_debug_dump_alias_audit(const char *label)
   Debug_Print_Force_Out("TX actual desc cached = 0x", 0u, 0,
                         NETDEV_GETH_LMU_NONCACHED_TO_CACHED((uint32)netdev_get_actual_tx_descriptor_nc()), dbug_num_type_HEX32);
   Debug_Print_Force_Out("TX actual desc noncached = 0x", 0u, 0, (uint32)netdev_get_actual_tx_descriptor_nc(), dbug_num_type_HEX32);
+}
+
+static void netdev_debug_dump_dma_target_aliases(const char *label)
+{
+  Debug_Print_Force_Out(label, 0u, 0, 0u, dbug_num_type_str);
+  Debug_Print_Force_Out("RXDESC dma target = 0x", 0u, 0, NETDEV_GETH_RXDESC_DMA_ADDR, dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RXDESC cpu alias = 0x", 0u, 0, NETDEV_GETH_RXDESC_BASE_ADDR, dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, NETDEV_GETH_RXBUF_DMA_ADDR, dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RXBUF cpu alias = 0x", 0u, 0, NETDEV_GETH_RXBUF_BASE_ADDR, dbug_num_type_HEX32);
 }
 
 static void netdev_debug_dump_mac_programming(const char *label)
@@ -620,21 +638,25 @@ static void netdev_debug_dump_rx_buffer_window(const char *label, uint32 bufferA
   uint32 rxBufBase;
   uint32 rxBufLimit;
   uint32 dumpLen;
+  uint32 cpuVisibleAddr;
 
   rxBufBase = NETDEV_GETH_RXBUF_BASE_ADDR;
   rxBufLimit = NETDEV_GETH_RXBUF_BASE_ADDR + NETDEV_GETH_RXBUF_TOTAL_SIZE;
   dumpLen = 32u;
+  cpuVisibleAddr = NETDEV_GETH_LMU_CACHED_TO_NONCACHED(bufferAddr);
 
   debugPrintOnce = true;
   Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
   debugPrintOnce = true;
   Debug_Print_Out("    addr = 0x", 0u, 0, bufferAddr, dbug_num_type_HEX32);
+  debugPrintOnce = true;
+  Debug_Print_Out("    cpu-visible addr = 0x", 0u, 0, cpuVisibleAddr, dbug_num_type_HEX32);
 
-  if ((bufferAddr >= rxBufBase) && ((bufferAddr + dumpLen) <= rxBufLimit))
+  if ((cpuVisibleAddr >= rxBufBase) && ((cpuVisibleAddr + dumpLen) <= rxBufLimit))
   {
     __dsync();
     debugPrintOnce = true;
-    Debug_Print_Data_Array("    buf[0:31] = ", (const uint8 *)bufferAddr, dumpLen);
+    Debug_Print_Data_Array("    buf[0:31] = ", (const uint8 *)cpuVisibleAddr, dumpLen);
   }
   else
   {
@@ -884,7 +906,7 @@ static uint32 netdev_debug_get_rx_descriptor_index(volatile IfxGeth_RxDescr *rxD
     return 0xFFFFFFFFu;
   }
 
-  addr = (uint32)rxDescriptor;
+  addr = NETDEV_GETH_LMU_CACHED_TO_NONCACHED((uint32)rxDescriptor);
   baseAddr = NETDEV_GETH_RXDESC_BASE_ADDR;
   totalSize = (uint32)sizeof(IfxGeth_RxDescr) * (uint32)IFXGETH_MAX_RX_DESCRIPTORS;
 
@@ -914,6 +936,9 @@ static void netdev_debug_dump_rx_descriptor(const char *label, volatile IfxGeth_
 
   debugPrintOnce = true;
   Debug_Print_Out("  RX descriptor addr = 0x", 0u, 0, (uint32)rxDescriptor, dbug_num_type_HEX32);
+  debugPrintOnce = true;
+  Debug_Print_Out("  RX descriptor cpu-visible = 0x", 0u, 0,
+                  NETDEV_GETH_LMU_CACHED_TO_NONCACHED((uint32)rxDescriptor), dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("  RX descriptor idx = ", descriptorIndex, 0, 0u, dbug_num_type_U32);
   debugPrintOnce = true;
@@ -953,7 +978,7 @@ static void netdev_debug_dump_rx_visibility(const char *label)
   uint32 rxDescLimit;
 
   swDescriptor = netdev_get_actual_rx_descriptor_nc();
-  hwDescriptorAddr = g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U;
+  hwDescriptorAddr = NETDEV_GETH_LMU_CACHED_TO_NONCACHED(g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U);
   hwDescriptor = (volatile IfxGeth_RxDescr *)hwDescriptorAddr;
   rxDescBase = NETDEV_GETH_RXDESC_BASE_ADDR;
   rxDescLimit = NETDEV_GETH_RXDESC_BASE_ADDR + ((uint32)sizeof(IfxGeth_RxDescr) * (uint32)IFXGETH_MAX_RX_DESCRIPTORS);
@@ -961,7 +986,9 @@ static void netdev_debug_dump_rx_visibility(const char *label)
   debugPrintOnce = true;
   Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
   debugPrintOnce = true;
-  Debug_Print_Out("RX_CUR_APP_DESC = 0x", 0u, 0, hwDescriptorAddr, dbug_num_type_HEX32);
+  Debug_Print_Out("RX_CUR_APP_DESC = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U, dbug_num_type_HEX32);
+  debugPrintOnce = true;
+  Debug_Print_Out("RX_CUR_APP_DESC cpu-visible = 0x", 0u, 0, hwDescriptorAddr, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("RX_CUR_APP_BUF = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXBUFFER.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
@@ -1087,6 +1114,26 @@ static uint8 netdev_rx_dma_needs_recovery(void)
 }
 
 
+static void netdev_clear_rx_dma_sticky_status(const char *reason)
+{
+  if (reason != NULL_PTR)
+  {
+    Debug_Print_Force_Out(reason, 0u, 0, 0u, dbug_num_type_str);
+  }
+
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_receiveInterrupt);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_receiveBufferUnavailable);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_receiveStopped);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_receiveWatchdogTimeout);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_earlyReceiveInterrupt);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_earlyTransmitInterrupt);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_fatalBusError);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_contextDescriptorError);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_abnormalInterruptSummary);
+  IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0, IfxGeth_DmaInterruptFlag_normalInterruptSummary);
+  __dsync();
+}
+
 static void netdev_recover_rx_channel_without_rearm(void)
 {
   /* Perform a stronger RX kick than a plain wakeup:
@@ -1098,6 +1145,7 @@ static void netdev_recover_rx_channel_without_rearm(void)
   g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.SR = 0u;
   IfxGeth_dma_clearAllInterruptFlags(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0);
   IfxGeth_mtl_clearAllInterruptFlags(g_IfxGeth.gethSFR, IfxGeth_MtlQueue_0);
+  netdev_clear_rx_dma_sticky_status("RX DMA sticky clear before recovery");
   __dsync();
 
   netdev_force_rx_queue_path_config(0u);
@@ -1136,7 +1184,7 @@ static uint32 netdev_get_rx_tail_pointer_value(uint8 useOnePastLast)
 {
   uint32 rxDescBase;
 
-  rxDescBase = NETDEV_GETH_RXDESC_BASE_ADDR;
+  rxDescBase = NETDEV_GETH_RXDESC_DMA_ADDR;
 
   if (useOnePastLast != 0u)
   {
@@ -1152,7 +1200,7 @@ static void netdev_program_rx_ring_registers(uint8 useOnePastLast)
   uint32 rxDescBase;
   uint32 rxTail;
 
-  rxDescBase = NETDEV_GETH_RXDESC_BASE_ADDR;
+  rxDescBase = NETDEV_GETH_RXDESC_DMA_ADDR;
   rxTail = netdev_get_rx_tail_pointer_value(useOnePastLast);
 
   __dsync();
@@ -1307,7 +1355,7 @@ static void netdev_force_rx_rearm(void)
   volatile IfxGeth_RxDescr   *descr;
   IfxGeth_Eth_RxChannelConfig rxChannelConfig;
 
-  rxDescBase = NETDEV_GETH_RXDESC_BASE_ADDR;
+  rxDescBase = NETDEV_GETH_RXDESC_DMA_ADDR;
   descr = (volatile IfxGeth_RxDescr *)NETDEV_GETH_RXDESC_BASE_ADDR;
 
   memset((void *)NETDEV_GETH_RXDESC_BASE_ADDR, 0, NETDEV_GETH_RXDESC_TOTAL_SIZE);
@@ -1316,10 +1364,11 @@ static void netdev_force_rx_rearm(void)
   rxChannelConfig.channelId             = IfxGeth_RxDmaChannel_0;
   rxChannelConfig.maxBurstLength        = IfxGeth_DmaBurstLength_32;
   rxChannelConfig.rxDescrList           = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
-  rxChannelConfig.rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_BASE_ADDR;
+  rxChannelConfig.rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_DMA_ADDR;
   rxChannelConfig.rxBuffer1Size         = IFXGETH_MAX_RX_BUFFER_SIZE;
 
   g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.SR = 0u;
+  netdev_clear_rx_dma_sticky_status("RX DMA sticky clear before rearm");
   __dsync();
 
   g_IfxGeth.rxChannel[IfxGeth_RxDmaChannel_0].rxDescrList = rxChannelConfig.rxDescrList;
@@ -1607,7 +1656,7 @@ unsigned char netdev_init(void)
 	/* DMA Rx configuration. */
 	GethConfig.dma.rxChannel[0].channelId = IfxGeth_RxDmaChannel_0;
 	GethConfig.dma.rxChannel[0].rxDescrList = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
-	GethConfig.dma.rxChannel[0].rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_BASE_ADDR;
+	GethConfig.dma.rxChannel[0].rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_DMA_ADDR;
 	GethConfig.dma.rxChannel[0].rxBuffer1Size = IFXGETH_MAX_RX_BUFFER_SIZE;
 	GethConfig.dma.rxChannel[0].maxBurstLength = IfxGeth_DmaBurstLength_32;
 	/* DMA event signaling. Note that the priority is set to 0, which bypassed the
@@ -1670,7 +1719,10 @@ unsigned char netdev_init(void)
 	Debug_Print_Force_Out("TXBUF symbol = 0x", 0u, 0, NETDEV_GETH_TXBUF_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXDESC symbol = 0x", 0u, 0, NETDEV_GETH_RXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("TXDESC symbol = 0x", 0u, 0, NETDEV_GETH_TXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
+	Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, NETDEV_GETH_RXBUF_DMA_ADDR, dbug_num_type_HEX32);
+	Debug_Print_Force_Out("RXDESC dma target = 0x", 0u, 0, NETDEV_GETH_RXDESC_DMA_ADDR, dbug_num_type_HEX32);
 	netdev_debug_dump_alias_audit("DMA alias audit after initModule");
+	netdev_debug_dump_dma_target_aliases("RX DMA target aliases after initModule");
 #endif
 	/* Test patch: relax MAC filtering so broadcast/unicast frames are not dropped
 	 * while we are still localizing the no-RX issue.
