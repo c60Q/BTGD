@@ -120,6 +120,7 @@ static uint8 linkUpFlag;
 static uint8 g_netdevRxTailUseOnePastLast = 1u;
 static uint8 g_netdevRxUseDaBasedRouting = 0u;
 static uint8 g_netdevRxAcceptanceMode = 1u; /* 1 = strict station-MAC, 0 = permissive debug; RA-only probe retired */
+static uint8 g_netdevRxBufferDmaUseNonCachedAlias = 1u; /* 1 = RDES0/RX buffer DMA target uses 0xB... alias, 0 = 0x900... symbol alias */
 
 #define NETDEV_RX_PROGRESS_LOG_PKT_STEP           (64u)
 #define NETDEV_RX_STALL_SUMMARY_LOG_MASK          (0x1FFFu)
@@ -198,6 +199,8 @@ static void netdev_debug_dump_rx_queue_dma_matrix(const char *label);
 static void netdev_debug_dump_rx_packet_counters(const char *label);
 static void netdev_debug_dump_rx_buffer_window(const char *label, uint32 bufferAddr);
 static void netdev_debug_dump_dma_target_aliases(const char *label);
+static uint32 netdev_get_rx_buffer_dma_address(void);
+static void netdev_debug_print_rx_buffer_dma_alias_mode(const char *label);
 static void netdev_debug_dump_rx_buffer_ring_heads(const char *label, uint32 count);
 static void netdev_debug_dump_mac_dma_counters(void);
 static void netdev_debug_dump_mac_programming(const char *label);
@@ -274,12 +277,27 @@ static void netdev_debug_dump_alias_audit(const char *label)
   Debug_Print_Force_Out("TX actual desc noncached = 0x", 0u, 0, (uint32)netdev_get_actual_tx_descriptor_nc(), dbug_num_type_HEX32);
 }
 
+static uint32 netdev_get_rx_buffer_dma_address(void)
+{
+  return (g_netdevRxBufferDmaUseNonCachedAlias != 0u) ? NETDEV_GETH_RXBUF_BASE_ADDR : NETDEV_GETH_RXBUF_SYMBOL_ADDR;
+}
+
+
+static void netdev_debug_print_rx_buffer_dma_alias_mode(const char *label)
+{
+  Debug_Print_Force_Out(label, 0u, 0, 0u, dbug_num_type_str);
+  Debug_Print_Force_Out("RX buffer dma alias mode = ", g_netdevRxBufferDmaUseNonCachedAlias, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX buffer dma target = 0x", 0u, 0, netdev_get_rx_buffer_dma_address(), dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RX buffer cpu alias = 0x", 0u, 0, NETDEV_GETH_RXBUF_BASE_ADDR, dbug_num_type_HEX32);
+}
+
+
 static void netdev_debug_dump_dma_target_aliases(const char *label)
 {
   Debug_Print_Force_Out(label, 0u, 0, 0u, dbug_num_type_str);
   Debug_Print_Force_Out("RXDESC dma target = 0x", 0u, 0, NETDEV_GETH_RXDESC_DMA_ADDR, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RXDESC cpu alias = 0x", 0u, 0, NETDEV_GETH_RXDESC_BASE_ADDR, dbug_num_type_HEX32);
-  Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, NETDEV_GETH_RXBUF_DMA_ADDR, dbug_num_type_HEX32);
+  Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, netdev_get_rx_buffer_dma_address(), dbug_num_type_HEX32);
   Debug_Print_Force_Out("RXBUF cpu alias = 0x", 0u, 0, NETDEV_GETH_RXBUF_BASE_ADDR, dbug_num_type_HEX32);
 }
 
@@ -1324,6 +1342,7 @@ static void netdev_force_rx_quiet_summary(const char *reason)
   Debug_Print_Force_Out("RX quiet linkUp = ", (uint32_t)linkUpFlag, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet tail mode = ", g_netdevRxTailUseOnePastLast, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet accept mode = ", g_netdevRxAcceptanceMode, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet buf alias mode = ", g_netdevRxBufferDmaUseNonCachedAlias, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet DMA_NIS = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].STATUS.B.NIS, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet DMA_AIS = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].STATUS.B.AIS, 0, 0u, dbug_num_type_U32);
@@ -1364,7 +1383,7 @@ static void netdev_force_rx_rearm(void)
   rxChannelConfig.channelId             = IfxGeth_RxDmaChannel_0;
   rxChannelConfig.maxBurstLength        = IfxGeth_DmaBurstLength_32;
   rxChannelConfig.rxDescrList           = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
-  rxChannelConfig.rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_DMA_ADDR;
+  rxChannelConfig.rxBuffer1StartAddress = (uint32 *)netdev_get_rx_buffer_dma_address();
   rxChannelConfig.rxBuffer1Size         = IFXGETH_MAX_RX_BUFFER_SIZE;
 
   g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.SR = 0u;
@@ -1401,6 +1420,7 @@ static void netdev_force_rx_rearm(void)
   debugPrintOnce = true;
   Debug_Print_Out("RX_CONTROL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
+  netdev_debug_print_rx_buffer_dma_alias_mode("RX DMA buffer alias after RX rearm");
   netdev_debug_dump_rx_descriptor("RX rearm descriptor[0]", &descr[0]);
   netdev_debug_dump_rx_queue_path("RX rearm queue path");
   netdev_debug_dump_alias_audit("DMA alias audit after RX rearm");
@@ -1656,7 +1676,7 @@ unsigned char netdev_init(void)
 	/* DMA Rx configuration. */
 	GethConfig.dma.rxChannel[0].channelId = IfxGeth_RxDmaChannel_0;
 	GethConfig.dma.rxChannel[0].rxDescrList = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
-	GethConfig.dma.rxChannel[0].rxBuffer1StartAddress = (uint32 *)NETDEV_GETH_RXBUF_DMA_ADDR;
+	GethConfig.dma.rxChannel[0].rxBuffer1StartAddress = (uint32 *)netdev_get_rx_buffer_dma_address();
 	GethConfig.dma.rxChannel[0].rxBuffer1Size = IFXGETH_MAX_RX_BUFFER_SIZE;
 	GethConfig.dma.rxChannel[0].maxBurstLength = IfxGeth_DmaBurstLength_32;
 	/* DMA event signaling. Note that the priority is set to 0, which bypassed the
@@ -1719,7 +1739,7 @@ unsigned char netdev_init(void)
 	Debug_Print_Force_Out("TXBUF symbol = 0x", 0u, 0, NETDEV_GETH_TXBUF_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXDESC symbol = 0x", 0u, 0, NETDEV_GETH_RXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("TXDESC symbol = 0x", 0u, 0, NETDEV_GETH_TXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
-	Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, NETDEV_GETH_RXBUF_DMA_ADDR, dbug_num_type_HEX32);
+	Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, netdev_get_rx_buffer_dma_address(), dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXDESC dma target = 0x", 0u, 0, NETDEV_GETH_RXDESC_DMA_ADDR, dbug_num_type_HEX32);
 	netdev_debug_dump_alias_audit("DMA alias audit after initModule");
 	netdev_debug_dump_dma_target_aliases("RX DMA target aliases after initModule");
