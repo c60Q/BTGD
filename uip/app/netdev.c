@@ -112,7 +112,7 @@ static uint8 linkUpFlag;
  */
 static uint8 g_netdevRxTailUseOnePastLast = 1u;
 static uint8 g_netdevRxUseDaBasedRouting = 0u;
-static uint8 g_netdevRxAcceptanceMode = 2u; /* 2 = RA-only probe, 1 = strict station-MAC, 0 = permissive debug */
+static uint8 g_netdevRxAcceptanceMode = 1u; /* 1 = strict station-MAC, 0 = permissive debug; RA-only probe retired */
 
 #define NETDEV_RX_PROGRESS_LOG_PKT_STEP           (64u)
 #define NETDEV_RX_STALL_SUMMARY_LOG_MASK          (0x1FFFu)
@@ -322,19 +322,12 @@ static void netdev_debug_dump_mac_programming(const char *label)
 
 static void netdev_program_duplicate_mac_filter1(uint8 verbose, const char *reason)
 {
-  uint32 high;
-  uint32 low;
-
-  low = ((uint32)macAddress.addr[3] << 24) | ((uint32)macAddress.addr[2] << 16) | ((uint32)macAddress.addr[1] << 8) | (uint32)macAddress.addr[0];
-  high = ((uint32)macAddress.addr[5] << 8) | (uint32)macAddress.addr[4];
-
-  g_IfxGeth.gethSFR->MAC_ADDRESS_LOW1.U = low;
+  /* Retire the auxiliary Address1 perfect filter while we narrow the RX path.
+   * Keep only station MAC address 0 active so queue / DMA behaviour is easier
+   * to interpret from logs.
+   */
+  g_IfxGeth.gethSFR->MAC_ADDRESS_LOW1.U = 0u;
   g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.U = 0u;
-  g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.ADDRHI = high;
-  g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.DCS = 0u;
-  g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.MBC = 0u;
-  g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.SA = 0u;
-  g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.AE = 1u;
   __dsync();
 
   if (verbose != 0u)
@@ -347,12 +340,6 @@ static void netdev_program_duplicate_mac_filter1(uint8 verbose, const char *reas
     Debug_Print_Out("  MAC_ADDR1_LOW = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_ADDRESS_LOW1.U, dbug_num_type_HEX32);
     debugPrintOnce = true;
     Debug_Print_Out("  MAC_ADDR1_AE = ", (uint32)g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.AE, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("  MAC_ADDR1_SA = ", (uint32)g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.SA, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("  MAC_ADDR1_DCS = ", (uint32)g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.DCS, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("  MAC_ADDR1_MBC = 0x", 0u, 0, (uint32)g_IfxGeth.gethSFR->MAC_ADDRESS_HIGH1.B.MBC, dbug_num_type_HEX32);
   }
 }
 
@@ -428,6 +415,7 @@ static void netdev_debug_dump_rx_queue_path(const char *label)
   Debug_Print_Out("  MAC_PACKET_FILTER = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_PACKET_FILTER.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_RXQ_CTRL0 = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.U, dbug_num_type_HEX32);
+  Debug_Print_Out("  RXQ0EN raw = ", (uint32)g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.B.RXQ0EN, 0, 0u, dbug_num_type_U32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_RXQ_CTRL1 = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
@@ -513,6 +501,7 @@ static void netdev_debug_dump_rx_queue_dma_matrix(const char *label)
   Debug_Print_Out(label, 0u, 0, 0u, dbug_num_type_str);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_RXQ_CTRL0 = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.U, dbug_num_type_HEX32);
+  Debug_Print_Out("  RXQ0EN raw = ", (uint32)g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.B.RXQ0EN, 0, 0u, dbug_num_type_U32);
   debugPrintOnce = true;
   Debug_Print_Out("  MAC_RXQ_CTRL1 = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.U, dbug_num_type_HEX32);
   debugPrintOnce = true;
@@ -692,7 +681,11 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
   g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.U = 0u;
   g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.U = 0u;
 
-  g_IfxGeth.gethSFR->MAC_RXQ_CTRL0.B.RXQ0EN = 2u;
+  /* Use the iLLD helper for the standard queue0 enable encoding.
+   * On this TC39B iLLD, helper writes RXQ0EN = 2, which is the normal MTL
+   * queue enable value rather than a custom debug-only mode.
+   */
+  IfxGeth_mtl_enableRxQueue(g_IfxGeth.gethSFR, IfxGeth_RxMtlQueue_0);
   g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0MDMACH = 0u;
 
   /* Hard-program RXQ0 operation mode instead of relying on multiple bitfield
@@ -704,34 +697,7 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
 
   IfxGeth_mac_setMacAddress(g_IfxGeth.gethSFR, (uint8 *)&macAddress.addr[0]);
 
-  if (g_netdevRxAcceptanceMode == 2u)
-  {
-    g_netdevRxUseDaBasedRouting = 0u;
-
-    /* RA-only probe: keep the fixed queue0 -> DMA0 path and verified OMR,
-     * but bypass destination-address filtering without enabling the broader
-     * promiscuous/filter-fail path. This isolates "DA filter rejects the frame"
-     * from "DMA/descriptor path still does not consume accepted traffic".
-     */
-    g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.B.Q0DDMACH = 0u;
-    IfxGeth_mac_setPromiscuousMode(g_IfxGeth.gethSFR, FALSE);
-    IfxGeth_mac_setAllMulticastPassing(g_IfxGeth.gethSFR, FALSE);
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.RA = 1u;
-    g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.DBF = 0u;
-
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.AVCPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.PTPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.UPQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQ = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.MCBCQEN = 1u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TACPQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL1.B.TPQC = 0u;
-
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.UFFQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.MFFQE = 0u;
-    g_IfxGeth.gethSFR->MAC_RXQ_CTRL4.B.VFFQE = 0u;
-  }
-  else if (g_netdevRxAcceptanceMode == 1u)
+  if (g_netdevRxAcceptanceMode == 1u)
   {
     g_netdevRxUseDaBasedRouting = 0u;
 
@@ -787,7 +753,7 @@ static void netdev_force_rx_queue_path_config(uint8 verbose)
     g_IfxGeth.gethSFR->MAC_PACKET_FILTER.B.DBF = 0u;
   }
 
-  netdev_program_duplicate_mac_filter1(verbose, "RX duplicate MAC filter1 programmed");
+  netdev_program_duplicate_mac_filter1(verbose, "RX auxiliary MAC filter1 disabled");
   __dsync();
 
   if (verbose != 0u)
@@ -1228,18 +1194,7 @@ static void netdev_toggle_rx_tail_mode(const char *reason)
 
 static void netdev_toggle_rx_acceptance_mode(const char *reason)
 {
-  if (g_netdevRxAcceptanceMode == 2u)
-  {
-    g_netdevRxAcceptanceMode = 0u;
-  }
-  else if (g_netdevRxAcceptanceMode == 0u)
-  {
-    g_netdevRxAcceptanceMode = 1u;
-  }
-  else
-  {
-    g_netdevRxAcceptanceMode = 2u;
-  }
+  g_netdevRxAcceptanceMode = (g_netdevRxAcceptanceMode == 0u) ? 1u : 0u;
 
   Debug_Print_Force_Out("RX toggle accept reason", 0u, 0, 0u, dbug_num_type_str);
   Debug_Print_Force_Out(reason, 0u, 0, 0u, dbug_num_type_str);
