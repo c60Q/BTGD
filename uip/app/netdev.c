@@ -77,20 +77,25 @@ struct uip_eth_addr macAddress;
 static IfxGeth_Eth g_IfxGeth;
 
 /* Ethernet Tx/Rx descriptor and frame storage.
- * Keep the descriptor lists on the iLLD-provided LMU section objects and place the
- * frame buffers explicitly into the same non-cached LMU section. This removes the
- * remaining dependency on hard-coded 0xB004.... aliases and lets the linker assign
- * the final system addresses consistently for both CPU and GETH DMA use.
+ * Keep TX on the original LMU/iLLD objects, but move the whole RX ring
+ * (descriptors + frame buffers) into cpu1_dlmu as a single contiguous probe
+ * region. The previous step proved that changing only the RX buffer alias was
+ * not enough to eliminate RX FBE/REB=4, so this step removes the remaining
+ * dependence on the old LMU RX descriptor section and tests a fully co-located
+ * RX DMA path.
  */
-BEGIN_DATA_SECTION(lmubss)
+BEGIN_DATA_SECTION(lmubss_cpu1)
+static IfxGeth_RxDescrList IFX_ALIGN(64) g_netdevGethRxDescrList;
 static uint8 IFX_ALIGN(64) g_netdevGethRxBuffers[IFXGETH_MAX_RX_DESCRIPTORS * IFXGETH_MAX_RX_BUFFER_SIZE];
+END_DATA_SECTION
+BEGIN_DATA_SECTION(lmubss)
 static uint8 IFX_ALIGN(64) g_netdevGethTxBuffers[IFXGETH_MAX_TX_DESCRIPTORS * IFXGETH_MAX_TX_BUFFER_SIZE];
 END_DATA_SECTION
 
 #define NETDEV_GETH_LMU_CACHED_TO_NONCACHED(addr) ((((uint32)(addr) & 0xF0000000u) == 0x90000000u) ? ((uint32)(addr) + 0x20000000u) : (uint32)(addr))
 #define NETDEV_GETH_LMU_NONCACHED_TO_CACHED(addr) ((((uint32)(addr) & 0xF0000000u) == 0xB0000000u) ? ((uint32)(addr) - 0x20000000u) : (uint32)(addr))
 
-#define NETDEV_GETH_RXDESC_SYMBOL_ADDR ((uint32)&IfxGeth_Eth_rxDescrList[0][0])
+#define NETDEV_GETH_RXDESC_SYMBOL_ADDR ((uint32)&g_netdevGethRxDescrList)
 #define NETDEV_GETH_TXDESC_SYMBOL_ADDR ((uint32)&IfxGeth_Eth_txDescrList[0][0])
 #define NETDEV_GETH_RXBUF_SYMBOL_ADDR  ((uint32)&g_netdevGethRxBuffers[0])
 #define NETDEV_GETH_TXBUF_SYMBOL_ADDR  ((uint32)&g_netdevGethTxBuffers[0])
@@ -106,7 +111,7 @@ END_DATA_SECTION
  */
 #define NETDEV_GETH_RXDESC_DMA_ADDR    NETDEV_GETH_RXDESC_SYMBOL_ADDR
 #define NETDEV_GETH_RXBUF_DMA_ADDR     NETDEV_GETH_RXBUF_SYMBOL_ADDR
-#define NETDEV_GETH_RXDESC_TOTAL_SIZE  ((uint32)sizeof(IfxGeth_Eth_rxDescrList[0][0]))
+#define NETDEV_GETH_RXDESC_TOTAL_SIZE  ((uint32)sizeof(g_netdevGethRxDescrList))
 #define NETDEV_GETH_TXDESC_TOTAL_SIZE  ((uint32)sizeof(IfxGeth_Eth_txDescrList[0][0]))
 #define NETDEV_GETH_RXBUF_TOTAL_SIZE   ((uint32)sizeof(g_netdevGethRxBuffers))
 #define NETDEV_GETH_TXBUF_TOTAL_SIZE   ((uint32)sizeof(g_netdevGethTxBuffers))
@@ -120,7 +125,7 @@ static uint8 linkUpFlag;
 static uint8 g_netdevRxTailUseOnePastLast = 1u;
 static uint8 g_netdevRxUseDaBasedRouting = 0u;
 static uint8 g_netdevRxAcceptanceMode = 1u; /* 1 = strict station-MAC, 0 = permissive debug; RA-only probe retired */
-static uint8 g_netdevRxBufferDmaUseNonCachedAlias = 1u; /* 1 = RDES0/RX buffer DMA target uses 0xB... alias, 0 = 0x900... symbol alias */
+static uint8 g_netdevRxBufferDmaUseNonCachedAlias = 0u; /* 1 = RDES0/RX buffer DMA target uses 0xB... alias, 0 = 0x900... symbol alias */
 
 #define NETDEV_RX_PROGRESS_LOG_PKT_STEP           (64u)
 #define NETDEV_RX_STALL_SUMMARY_LOG_MASK          (0x1FFFu)
@@ -207,6 +212,61 @@ static void netdev_debug_dump_mac_programming(const char *label);
 static void netdev_debug_print_ipv4_bytes(const char *label, const uint8 *ipBytes);
 static void netdev_debug_print_eth_tx_summary(void);
 static void netdev_debug_print_eth_rx_summary(const uint8 *frame, uint16 frameLen);
+static uint8 netdev_debug_frame_targets_host_ipv4(const uint8 *frame, uint16 frameLen);
+static void netdev_debug_print_drop_reason(const uint8 *frame, uint16 frameLen)
+{
+  uint16 ethType;
+
+  if ((frame == NULL_PTR) || (frameLen < 14u))
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RX drop: short frame", (uint32_t)frameLen, 0, 0u, dbug_num_type_U32);
+    return;
+  }
+
+  ethType = ((uint16)frame[12] << 8) | (uint16)frame[13];
+  if (ethType == UIP_ETHTYPE_ARP)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RX drop: arp not for host", (uint32_t)frameLen, 0, 0u, dbug_num_type_U32);
+  }
+  else if (ethType == UIP_ETHTYPE_IP)
+  {
+    if (frameLen < 34u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("RX drop: short IPv4", (uint32_t)frameLen, 0, 0u, dbug_num_type_U32);
+    }
+    else if (netdev_debug_frame_targets_host_ipv4(frame, frameLen) == 0u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("RX drop: IPv4 not for host", (uint32_t)frameLen, 0, 0u, dbug_num_type_U32);
+    }
+    else if (frame[23] != UIP_PROTO_TCP)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("RX drop: host IPv4 non-TCP proto = ", (uint32_t)frame[23], 0, 0u, dbug_num_type_U32);
+    }
+    else if (frameLen < 54u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("RX drop: short TCP", (uint32_t)frameLen, 0, 0u, dbug_num_type_U32);
+    }
+    else
+    {
+      uint16 dstPort = ((uint16)frame[36] << 8) | (uint16)frame[37];
+      debugPrintOnce = true;
+      Debug_Print_Out("RX drop: tcp port mismatch = ", (uint32_t)dstPort, 0, 0u, dbug_num_type_U32);
+    }
+  }
+  else
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("RX drop: ethType = 0x", 0u, 0, (uint32_t)ethType, dbug_num_type_HEX32);
+  }
+}
+
+
 static uint32 netdev_debug_get_rx_descriptor_index(volatile IfxGeth_RxDescr *rxDescriptor);
 static void netdev_debug_dump_rx_descriptor(const char *label, volatile IfxGeth_RxDescr *rxDescriptor);
 static void netdev_debug_dump_rx_ring_descriptors(const char *label);
@@ -913,6 +973,74 @@ static void netdev_debug_print_eth_rx_summary(const uint8 *frame, uint16 frameLe
   }
 }
 
+
+static uint8 netdev_debug_frame_targets_host_ipv4(const uint8 *frame, uint16 frameLen)
+{
+  if ((frame == NULL_PTR) || (frameLen < 34u))
+  {
+    return 0u;
+  }
+
+  if ((((uint16)frame[12] << 8) | (uint16)frame[13]) != UIP_ETHTYPE_IP)
+  {
+    return 0u;
+  }
+
+  if ((frame[30] == (uint8)((uip_hostaddr[0] >> 8) & 0xFFu)) &&
+      (frame[31] == (uint8)(uip_hostaddr[0] & 0xFFu)) &&
+      (frame[32] == (uint8)((uip_hostaddr[1] >> 8) & 0xFFu)) &&
+      (frame[33] == (uint8)(uip_hostaddr[1] & 0xFFu)))
+  {
+    return 1u;
+  }
+
+  return 0u;
+}
+
+
+static uint8 netdev_debug_frame_is_relevant(const uint8 *frame, uint16 frameLen)
+{
+  uint16 ethType;
+
+  if ((frame == NULL_PTR) || (frameLen < 14u))
+  {
+    return 0u;
+  }
+
+  ethType = ((uint16)frame[12] << 8) | (uint16)frame[13];
+
+  if ((ethType == UIP_ETHTYPE_ARP) && (frameLen >= 42u))
+  {
+    if ((frame[38] == (uint8)((uip_hostaddr[0] >> 8) & 0xFFu)) &&
+        (frame[39] == (uint8)(uip_hostaddr[0] & 0xFFu)) &&
+        (frame[40] == (uint8)((uip_hostaddr[1] >> 8) & 0xFFu)) &&
+        (frame[41] == (uint8)(uip_hostaddr[1] & 0xFFu)))
+    {
+      return 1u;
+    }
+  }
+  else if ((ethType == UIP_ETHTYPE_IP) && (frameLen >= 34u))
+  {
+    if (netdev_debug_frame_targets_host_ipv4(frame, frameLen) != 0u)
+    {
+      if ((frame[23] == UIP_PROTO_TCP) && (frameLen >= 38u))
+      {
+        uint16 dstPort = ((uint16)frame[36] << 8) | (uint16)frame[37];
+
+        if (dstPort == BOOT_COM_NET_OPEN_PORT)
+        {
+          return 1u;
+        }
+      }
+
+      return 1u;
+    }
+  }
+
+  return 0u;
+}
+
+
 static uint32 netdev_debug_get_rx_descriptor_index(volatile IfxGeth_RxDescr *rxDescriptor)
 {
   uint32 addr;
@@ -1362,6 +1490,7 @@ static void netdev_force_rx_quiet_summary(const char *reason)
   Debug_Print_Force_Out("RX quiet RXQ0_OMR = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet RXQ0_RSF = ", (uint32_t)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RSF, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet RXQ0_RTC = ", (uint32_t)g_IfxGeth.gethSFR->MTL_RXQ0.OPERATION_MODE.B.RTC, 0, 0u, dbug_num_type_U32);
+  Debug_Print_Force_Out("RX quiet DMA_RXPBL = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.RXPBL, 0, 0u, dbug_num_type_U32);
   Debug_Print_Force_Out("RX quiet CUR_APP_RXDESC = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_RXDESC.U, dbug_num_type_HEX32);
   Debug_Print_Force_Out("RX quiet SW_RXDESC = 0x", 0u, 0, (uint32)swDescriptor, dbug_num_type_HEX32);
 }
@@ -1381,7 +1510,7 @@ static void netdev_force_rx_rearm(void)
   memset((void *)NETDEV_GETH_RXBUF_BASE_ADDR, 0, NETDEV_GETH_RXBUF_TOTAL_SIZE);
 
   rxChannelConfig.channelId             = IfxGeth_RxDmaChannel_0;
-  rxChannelConfig.maxBurstLength        = IfxGeth_DmaBurstLength_32;
+  rxChannelConfig.maxBurstLength        = IfxGeth_DmaBurstLength_8;
   rxChannelConfig.rxDescrList           = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
   rxChannelConfig.rxBuffer1StartAddress = (uint32 *)netdev_get_rx_buffer_dma_address();
   rxChannelConfig.rxBuffer1Size         = IFXGETH_MAX_RX_BUFFER_SIZE;
@@ -1423,6 +1552,7 @@ static void netdev_force_rx_rearm(void)
   netdev_debug_print_rx_buffer_dma_alias_mode("RX DMA buffer alias after RX rearm");
   netdev_debug_dump_rx_descriptor("RX rearm descriptor[0]", &descr[0]);
   netdev_debug_dump_rx_queue_path("RX rearm queue path");
+  Debug_Print_Out("RX DMA burst length current = ", (uint32_t)g_IfxGeth.gethSFR->DMA_CH[0].RX_CONTROL.B.RXPBL, 0, 0u, dbug_num_type_U32);
   netdev_debug_dump_alias_audit("DMA alias audit after RX rearm");
 }
 
@@ -1450,7 +1580,8 @@ static void netdev_force_tx_rearm(void)
 
   __dsync();
   IfxGeth_dma_stopTransmitter(g_IfxGeth.gethSFR, IfxGeth_TxDmaChannel_0);
-  g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U = g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U;
+  /* Read DMA status for debug visibility only; do not self-assign the SFR. */
+  (void)g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U;
   g_IfxGeth.gethSFR->DMA_CH[0].TX_CONTROL.B.OSF = 1u;
   g_IfxGeth.gethSFR->DMA_CH[0].TX_CONTROL.B.TXPBL = 32u;
   g_IfxGeth.gethSFR->MTL_TXQ0.OPERATION_MODE.B.TSF = 1u;
@@ -1678,7 +1809,7 @@ unsigned char netdev_init(void)
 	GethConfig.dma.rxChannel[0].rxDescrList = (IfxGeth_RxDescrList *)NETDEV_GETH_RXDESC_BASE_ADDR;
 	GethConfig.dma.rxChannel[0].rxBuffer1StartAddress = (uint32 *)netdev_get_rx_buffer_dma_address();
 	GethConfig.dma.rxChannel[0].rxBuffer1Size = IFXGETH_MAX_RX_BUFFER_SIZE;
-	GethConfig.dma.rxChannel[0].maxBurstLength = IfxGeth_DmaBurstLength_32;
+	GethConfig.dma.rxChannel[0].maxBurstLength = IfxGeth_DmaBurstLength_8;
 	/* DMA event signaling. Note that the priority is set to 0, which bypassed the
 	* interrupt from actually being enabled. This network interface works in polling
 	* mode.
@@ -1737,12 +1868,14 @@ unsigned char netdev_init(void)
 	Debug_Print_Force_Out("TXDESC base = 0x", 0u, 0, NETDEV_GETH_TXDESC_BASE_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXBUF symbol = 0x", 0u, 0, NETDEV_GETH_RXBUF_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("TXBUF symbol = 0x", 0u, 0, NETDEV_GETH_TXBUF_SYMBOL_ADDR, dbug_num_type_HEX32);
+	Debug_Print_Force_Out("RX buffer region probe = cpu1_dlmu", 0u, 0, 0u, dbug_num_type_str);
 	Debug_Print_Force_Out("RXDESC symbol = 0x", 0u, 0, NETDEV_GETH_RXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("TXDESC symbol = 0x", 0u, 0, NETDEV_GETH_TXDESC_SYMBOL_ADDR, dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXBUF dma target = 0x", 0u, 0, netdev_get_rx_buffer_dma_address(), dbug_num_type_HEX32);
 	Debug_Print_Force_Out("RXDESC dma target = 0x", 0u, 0, NETDEV_GETH_RXDESC_DMA_ADDR, dbug_num_type_HEX32);
 	netdev_debug_dump_alias_audit("DMA alias audit after initModule");
 	netdev_debug_dump_dma_target_aliases("RX DMA target aliases after initModule");
+	Debug_Print_Force_Out("RX DMA burst length probe = ", (uint32_t)IfxGeth_DmaBurstLength_8, 0, 0u, dbug_num_type_U32);
 #endif
 	/* Test patch: relax MAC filtering so broadcast/unicast frames are not dropped
 	 * while we are still localizing the no-RX issue.
@@ -1824,9 +1957,11 @@ unsigned int netdev_read(void)
   static uint32              lastHwRxDesc = 0u;
   static uint32              lastSwRxDesc = 0u;
   static uint32              lastRxProgressReportPktGood = 0u;
+  static uint32              lastRxHandledPktGood = 0u;
   static uint8               rxMacOnlyDetailedPrinted = 0u;
   static uint32              lastRxStallLoggedDmaStat = 0xFFFFFFFFu;
   static uint8               lastRxStallLoggedTailMode = 0xFFu;
+  static uint32              rxBackgroundSuppressCounter = 0u;
 
   /* Note this this function is called continuously to poll for new data. A good place
    * to also refresh the link status.
@@ -1855,16 +1990,12 @@ unsigned int netdev_read(void)
         ((rxPktGoodBefore >= lastRxProgressReportPktGood) &&
          ((rxPktGoodBefore - lastRxProgressReportPktGood) >= NETDEV_RX_PROGRESS_LOG_PKT_STEP)) ? 1u : 0u;
 
-      if ((descriptorStateChanged != 0u) || (packetProgressThresholdReached != 0u))
+      if (packetProgressThresholdReached != 0u)
       {
         debugPrintOnce = true;
         Debug_Print_Out("RX progress observed", 0u, 0, 0u, dbug_num_type_str);
         debugPrintOnce = true;
         Debug_Print_Out("RX_PKT_GOOD snapshot = ", rxPktGoodBefore, 0, 0u, dbug_num_type_U32);
-        if (descriptorStateChanged != 0u)
-        {
-          netdev_debug_dump_rx_visibility("RX progress visibility");
-        }
         lastRxProgressReportPktGood = rxPktGoodBefore;
       }
 
@@ -1964,11 +2095,37 @@ unsigned int netdev_read(void)
       else if (rxPktGoodBefore != lastRxPktGoodWithoutDescriptor)
       {
         static uint32 rxMacOnlyRecoverCounter = 0u;
+        static uint32 rxMacOnlyDeferredCounter = 0u;
+        uint32        rxMacOnlyDmaStat;
+        uint8         rxMacOnlyDeferRecovery;
+
         lastRxPktGoodWithoutDescriptor = rxPktGoodBefore;
         rxMacOnlyCounter++;
         rxMacOnlyRecoverCounter++;
+        rxMacOnlyDmaStat = g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U;
+        rxMacOnlyDeferRecovery = 0u;
 
-        if (rxMacOnlyDetailedPrinted == 0u)
+        if ((((rxMacOnlyDmaStat & 0x00000040u) != 0u) ||
+             (rxPktGoodBefore <= (lastRxHandledPktGood + 1u))) &&
+            ((rxMacOnlyDmaStat & 0x00002380u) == 0u))
+        {
+          rxMacOnlyDeferredCounter++;
+          rxMacOnlyDeferRecovery = 1u;
+
+          if ((rxMacOnlyDeferredCounter == 1u) ||
+              ((rxMacOnlyDeferredCounter & 0x0Fu) == 0u))
+          {
+            debugPrintOnce = true;
+            Debug_Print_Out("RX MAC-only deferred by RI/progress", rxMacOnlyDeferredCounter, 0, 0u, dbug_num_type_U32);
+            debugPrintOnce = true;
+            Debug_Print_Out("RX MAC-only deferred DMA_STAT = 0x", 0u, 0, rxMacOnlyDmaStat, dbug_num_type_HEX32);
+            netdev_debug_dump_rx_visibility("RX MAC-only deferred visibility");
+          }
+
+          rxMacOnlyDetailedPrinted = 0u;
+        }
+
+        if ((rxMacOnlyDeferRecovery == 0u) && (rxMacOnlyDetailedPrinted == 0u))
         {
           debugPrintOnce = true;
           Debug_Print_Out("RX MAC traffic observed without descriptor completion", rxMacOnlyCounter, 0, 0u, dbug_num_type_U32);
@@ -2000,7 +2157,8 @@ unsigned int netdev_read(void)
           netdev_force_rx_rearm();
           rxMacOnlyDetailedPrinted = 1u;
         }
-        if ((rxMacOnlyRecoverCounter & NETDEV_RX_MAC_ONLY_RECOVERY_STEP_MASK) == 0u)
+        if ((rxMacOnlyDeferRecovery == 0u) &&
+            ((rxMacOnlyRecoverCounter & NETDEV_RX_MAC_ONLY_RECOVERY_STEP_MASK) == 0u))
         {
           if ((rxMacOnlyRecoverCounter & 0x0Fu) == 0u)
           {
@@ -2049,11 +2207,7 @@ unsigned int netdev_read(void)
         uint32 rdes1 = rxDescriptor->RDES1.U;
 
         rxFrameLogCounter++;
-        if ((rxFrameLogCounter == 1u) ||
-            ((rxFrameLogCounter & NETDEV_RX_FRAME_DETAIL_LOG_MASK) == 0u))
-        {
-          rxFrameLogThisPacket = 1u;
-        }
+        rxFrameLogThisPacket = 0u;
 
         if (((rdes3 & (1UL << 15)) != 0U) ||
             ((rdes1 & (1UL << 7)) != 0U) ||
@@ -2061,7 +2215,10 @@ unsigned int netdev_read(void)
         {
           /* Error, this block is invalid. */
           frameLen = 0;
-          rxFrameLogThisPacket = 1u;
+          if ((rxFrameLogCounter == 1u) || ((rxFrameLogCounter & 0x3Fu) == 0u))
+          {
+            rxFrameLogThisPacket = 1u;
+          }
         }
         else
         {
@@ -2093,11 +2250,29 @@ unsigned int netdev_read(void)
           /* Only continue with a valid data pointer. */
           if (rxData != NULL)
           {
-            if (rxFrameLogThisPacket != 0u)
             {
-              debugPrintOnce = true;
-              Debug_Print_Data_Array("RX raw = ", rxData, (frameLen > 64u) ? 64u : (uint32_t)frameLen);
-              netdev_debug_print_eth_rx_summary(rxData, frameLen);
+              uint8 rxRelevant;
+
+              rxRelevant = netdev_debug_frame_is_relevant(rxData, frameLen);
+              if (rxRelevant != 0u)
+              {
+                rxFrameLogThisPacket = 1u;
+                debugPrintOnce = true;
+                Debug_Print_Out("RX relevant packet", rxFrameLogCounter, 0, 0u, dbug_num_type_U32);
+                debugPrintOnce = true;
+                Debug_Print_Data_Array("RX raw = ", rxData, (frameLen > 64u) ? 64u : (uint32_t)frameLen);
+                netdev_debug_print_eth_rx_summary(rxData, frameLen);
+              }
+              else
+              {
+                rxBackgroundSuppressCounter++;
+                if ((rxBackgroundSuppressCounter == 1u) || ((rxBackgroundSuppressCounter & 0x1Fu) == 0u))
+                {
+                  debugPrintOnce = true;
+                  Debug_Print_Out("RX background packet suppressed = ", rxBackgroundSuppressCounter, 0, 0u, dbug_num_type_U32);
+                  netdev_debug_print_drop_reason(rxData, frameLen);
+                }
+              }
             }
             /* Copy the received data ato the uIP data buffer. */
             memcpy(uip_buf, rxData, frameLen);
@@ -2117,6 +2292,11 @@ unsigned int netdev_read(void)
       if (rxFrameLogThisPacket != 0u)
       {
         netdev_debug_dump_rx_visibility("RX after free buffer");
+      }
+      if (result > 0u)
+      {
+        lastRxHandledPktGood = (uint32)g_IfxGeth.gethSFR->RX_PACKETS_COUNT_GOOD_BAD.B.RXPKTGB;
+        rxMacOnlyDetailedPrinted = 0u;
       }
     }
   }
@@ -2138,7 +2318,7 @@ unsigned int netdev_read(void)
     {
       rxIdleMismatchCounter++;
 
-      if ((rxIdleMismatchCounter & NETDEV_RX_IDLE_MISMATCH_LOG_MASK) == 1u)
+      if ((rxIdleMismatchCounter == 1u) || ((rxIdleMismatchCounter & 0x3Fu) == 0u))
       {
         debugPrintOnce = true;
         Debug_Print_Out("RX visibility mismatch while idle", rxIdleMismatchCounter, 0, 0u, dbug_num_type_U32);
@@ -2146,32 +2326,23 @@ unsigned int netdev_read(void)
       }
     }
 
+    /* RX idle DMA/MAC/descriptor snapshots are already validated and are temporarily silenced. */
     if (noRxDebugPrinted == 0u)
     {
       noRxDebugPrinted = 1u;
-      debugPrintOnce = true;
-      Debug_Print_Out("RX idle DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
-      debugPrintOnce = true;
-      Debug_Print_Out("MAC_RXQ_CTRL = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.U, dbug_num_type_HEX32);
-      debugPrintOnce = true;
-      Debug_Print_Out("MAC_PACKET_FILTER = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_PACKET_FILTER.U, dbug_num_type_HEX32);
-      netdev_debug_dump_mac_dma_counters();//qqqq
-      netdev_debug_dump_rx_visibility("RX idle visibility snapshot");
-      debugPrintOnce = true;
-      Debug_Print_Out("RX idle: skip forced rearm", 0u, 0, 0u, dbug_num_type_str);
+      /* debugPrintOnce = true; */
+      /* Debug_Print_Out("RX idle DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32); */
+      /* debugPrintOnce = true; */
+      /* Debug_Print_Out("MAC_RXQ_CTRL = 0x", 0u, 0, g_IfxGeth.gethSFR->MTL_RXQ_DMA_MAP0.U, dbug_num_type_HEX32); */
+      /* debugPrintOnce = true; */
+      /* Debug_Print_Out("MAC_PACKET_FILTER = 0x", 0u, 0, g_IfxGeth.gethSFR->MAC_PACKET_FILTER.U, dbug_num_type_HEX32); */
+      /* netdev_debug_dump_mac_dma_counters(); */
+      /* netdev_debug_dump_rx_visibility("RX idle visibility snapshot"); */
+      /* debugPrintOnce = true; */
+      /* Debug_Print_Out("RX idle: skip forced rearm", 0u, 0, 0u, dbug_num_type_str); */
     }
 
-    {
-      static unsigned long nextForcedQuietSummary = 0u;
-      unsigned long currentTime;
-
-      currentTime = TimerGet();
-      if (currentTime >= nextForcedQuietSummary)
-      {
-        nextForcedQuietSummary = currentTime + 5000u;
-        netdev_force_rx_quiet_summary("RX idle periodic 5s summary");
-      }
-    }
+    /* netdev_force_rx_quiet_summary("RX idle periodic 5s summary"); */
   }
 
   /* Give the result back to the caller. */
@@ -2196,16 +2367,26 @@ void netdev_send(void)
   volatile IfxGeth_TxDescr * txDescriptor;
   volatile IfxGeth_TxDescr * txSubmittedDescriptor = NULL_PTR;
   uint8                      txCompleted = 0u;
+  uint8                      txVerboseLog = 0u;
+  uint16                     txEthType = 0u;
   static uint32              txAttemptCounter = 0u;
 
-  txAttemptCounter++;
-  debugPrintOnce = true;
-  Debug_Print_Out("TX attempt = ", txAttemptCounter, 0, 0u, dbug_num_type_U32);
-  debugPrintOnce = true;
-  Debug_Print_Out("TX uip_len = ", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
-
-  if (uip_len > 0u)
+  if (uip_len >= 14u)
   {
+    txEthType = ((uint16)uip_buf[12] << 8) | (uint16)uip_buf[13];
+    if (txEthType == UIP_ETHTYPE_IP)
+    {
+      txVerboseLog = 1u;
+    }
+  }
+
+  txAttemptCounter++;
+  if (txVerboseLog != 0u)
+  {
+    debugPrintOnce = true;
+    Debug_Print_Out("TX attempt = ", txAttemptCounter, 0, 0u, dbug_num_type_U32);
+    debugPrintOnce = true;
+    Debug_Print_Out("TX uip_len = ", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
     netdev_debug_print_eth_tx_summary();
     debugPrintOnce = true;
     Debug_Print_Data_Array("TX raw = ", uip_buf, (uip_len > 64u) ? 64u : (uint32_t)uip_len);
@@ -2231,15 +2412,18 @@ void netdev_send(void)
 
     txDescriptor = netdev_get_actual_tx_descriptor_nc();
     txSubmittedDescriptor = txDescriptor;
-    netdev_debug_dump_tx_descriptor("TX descriptor before submit", txDescriptor);
-    debugPrintOnce = true;
-    Debug_Print_Out("TXDESC_LIST = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_LIST_ADDRESS.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TXDESC_TAIL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_CONTROL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TX_CONTROL.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+    if (txVerboseLog != 0u)
+    {
+      netdev_debug_dump_tx_descriptor("TX descriptor before submit", txDescriptor);
+      debugPrintOnce = true;
+      Debug_Print_Out("TXDESC_LIST = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_LIST_ADDRESS.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TXDESC_TAIL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_CONTROL = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TX_CONTROL.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+    }
 
     if (txData == NULL)
     {
@@ -2249,8 +2433,11 @@ void netdev_send(void)
       return;
     }
 
-    debugPrintOnce = true;
-    Debug_Print_Out("TX buffer ptr = 0x", 0u, 0, (uint32)txData, dbug_num_type_HEX32);
+    if (txVerboseLog != 0u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("TX buffer ptr = 0x", 0u, 0, (uint32)txData, dbug_num_type_HEX32);
+    }
 
     /* Copy the packet data to the tx data buffer. */
     memcpy(txData, uip_buf, uip_len);
@@ -2258,10 +2445,13 @@ void netdev_send(void)
 
     txPktBefore = (uint32)g_IfxGeth.gethSFR->TX_PACKET_COUNT_GOOD.B.TXPKTG;
     txOctBefore = (uint32)g_IfxGeth.gethSFR->TX_OCTET_COUNT_GOOD.B.TXOCTG;
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_PKT_GOOD before = ", txPktBefore, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_OCT_GOOD before = ", txOctBefore, 0, 0u, dbug_num_type_U32);
+    if (txVerboseLog != 0u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_PKT_GOOD before = ", txPktBefore, 0, 0u, dbug_num_type_U32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_OCT_GOOD before = ", txOctBefore, 0, 0u, dbug_num_type_U32);
+    }
 
     IfxGeth_dma_clearInterruptFlag(g_IfxGeth.gethSFR, IfxGeth_DmaChannel_0,
                                    IfxGeth_DmaInterruptFlag_transmitInterrupt);
@@ -2269,21 +2459,26 @@ void netdev_send(void)
     netdev_sync_dma_alias_handles();
 
     txDescriptor = netdev_get_actual_tx_descriptor_nc();
-    if (txSubmittedDescriptor != NULL_PTR)
+    if (txVerboseLog != 0u)
     {
-      netdev_debug_dump_tx_descriptor("TX submitted descriptor after submit", txSubmittedDescriptor);
+      if (txSubmittedDescriptor != NULL_PTR)
+      {
+        netdev_debug_dump_tx_descriptor("TX submitted descriptor after submit", txSubmittedDescriptor);
+      }
+      netdev_debug_dump_tx_descriptor("TX descriptor after submit", txDescriptor);
+      debugPrintOnce = true;
+      Debug_Print_Out("TXDESC_TAIL after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_CUR_APP_DESC after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_TXDESC.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_CUR_APP_BUF after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_TXBUFFER.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("DMA_STAT after submit = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX submit", 0u, 0, 0u, dbug_num_type_str);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX submit len = ", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
     }
-    netdev_debug_dump_tx_descriptor("TX descriptor after submit", txDescriptor);
-    debugPrintOnce = true;
-    Debug_Print_Out("TXDESC_TAIL after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].TXDESC_TAIL_POINTER.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_CUR_APP_DESC after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_TXDESC.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_CUR_APP_BUF after = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].CURRENT_APP_TXBUFFER.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("DMA_STAT after submit = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX submit", 0u, 0, 0u, dbug_num_type_str);
 
     timeout = TimerGet() + NETDEV_TX_PACKET_TIMEOUT_MS;
     while (txCompleted == 0u)
@@ -2309,32 +2504,53 @@ void netdev_send(void)
 
     if (txCompleted != 0u)
     {
-      debugPrintOnce = true;
-      Debug_Print_Out("TX done", 0u, 0, 0u, dbug_num_type_str);
+      if (txVerboseLog != 0u)
+      {
+        debugPrintOnce = true;
+        Debug_Print_Out("TX done", 0u, 0, 0u, dbug_num_type_str);
+        debugPrintOnce = true;
+        Debug_Print_Out("TX post-check DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+      }
     }
     else
     {
       debugPrintOnce = true;
       Debug_Print_Out("TX wait timeout", 0u, 0, 0u, dbug_num_type_str);
+      if (txSubmittedDescriptor != NULL_PTR)
+      {
+        debugPrintOnce = true;
+        Debug_Print_Out("TX timeout desc3 = 0x", 0u, 0, txSubmittedDescriptor->TDES3.U, dbug_num_type_HEX32);
+      }
+      debugPrintOnce = true;
+      Debug_Print_Out("TX timeout DMA_STAT = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
       netdev_force_tx_rearm();
     }
 
     txDescriptor = netdev_get_actual_tx_descriptor_nc();
-    if (txSubmittedDescriptor != NULL_PTR)
+    if (txVerboseLog != 0u)
     {
-      netdev_debug_dump_tx_descriptor("TX submitted descriptor after wait", txSubmittedDescriptor);
+      if (txSubmittedDescriptor != NULL_PTR)
+      {
+        netdev_debug_dump_tx_descriptor("TX submitted descriptor after wait", txSubmittedDescriptor);
+      }
+      netdev_debug_dump_tx_descriptor("TX descriptor after wait", txDescriptor);
     }
-    netdev_debug_dump_tx_descriptor("TX descriptor after wait", txDescriptor);
 
     txPktAfter = (uint32)g_IfxGeth.gethSFR->TX_PACKET_COUNT_GOOD.B.TXPKTG;
     txOctAfter = (uint32)g_IfxGeth.gethSFR->TX_OCTET_COUNT_GOOD.B.TXOCTG;
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_PKT_GOOD after = ", txPktAfter, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("TX_OCT_GOOD after = ", txOctAfter, 0, 0u, dbug_num_type_U32);
-    debugPrintOnce = true;
-    Debug_Print_Out("DMA_STAT after wait = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
-    netdev_debug_dump_mac_dma_counters();
+    if (txVerboseLog != 0u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_PKT_GOOD after = ", txPktAfter, 0, 0u, dbug_num_type_U32);
+      debugPrintOnce = true;
+      Debug_Print_Out("TX_OCT_GOOD after = ", txOctAfter, 0, 0u, dbug_num_type_U32);
+      debugPrintOnce = true;
+      Debug_Print_Out("DMA_STAT after wait = 0x", 0u, 0, g_IfxGeth.gethSFR->DMA_CH[0].STATUS.U, dbug_num_type_HEX32);
+    }
+    if ((txVerboseLog != 0u) || (txCompleted == 0u))
+    {
+      netdev_debug_dump_mac_dma_counters();
+    }
   }
   else
   {

@@ -91,7 +91,7 @@
 /** \brief Configure the 4th byte of the gateway address */
 #define BOOT_COM_NET_GATEWAY3             (1)
 
-#define BOOT_COM_NET_OPEN_PORT	(7000)
+#define BOOT_COM_NET_OPEN_PORT	(5000)
 
 
 /* Timeout time for transmitting a packet. */

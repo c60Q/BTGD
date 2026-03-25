@@ -55,6 +55,10 @@
 #define NET_GARP_PACKET_LEN          (60u)
 #define NET_ARP_REQUEST              (1u)
 #define NET_ARP_REPLY                (2u)
+#define NET_RELEVANT_RX_LOG_PORT     (BOOT_COM_NET_OPEN_PORT)
+/* Open port is aligned to the current PC tool target port for this debug round. */
+/* #define NET_LEGACY_PC_TOOL_PORT        (5000u) */
+#define NET_GARP_KEEPALIVE_MS          (15000u)
 
 
 /****************************************************************************************
@@ -68,6 +72,12 @@ static unsigned long ARPTimerTimeOut;
 static unsigned long garpTimerTimeOut;
 /** \brief Number of remaining gratuitous ARP announcements to send. */
 static unsigned char garpAnnouncementsPending;
+/** \brief Periodic keepalive timer for extra gratuitous ARP while waiting for a directed host packet. */
+static unsigned long garpKeepAliveTimeOut;
+/** \brief Flag indicating whether a directed/relevant packet for the bootloader was seen. */
+static unsigned char netRelevantRxSeen;
+/** \brief Number of directed/relevant packets seen for the bootloader. */
+static unsigned long netRelevantRxCount;
 
 #if defined(__TASKING__)
 #pragma pack 2
@@ -91,6 +101,11 @@ struct net_arp_hdr
 
 static void NetSendGratuitousArpFrame(unsigned short opcode);
 static void NetHandleGratuitousArpAnnouncement(void);
+static unsigned char NetArpTargetsHost(const struct net_arp_hdr *arp);
+static unsigned char NetIpv4DestIsHost(const unsigned char *frame);
+static unsigned short NetReadBe16(const unsigned char *data);
+static unsigned char NetIsRelevantTcpPort(unsigned short dstPort);
+static void NetDebugPrintTcpCheckpoint(const char *prefix, const unsigned char *frame, unsigned long packetLen);
 
 #if (BOOT_COM_NET_DHCP_ENABLE > 0) // now set it as false
 /** \brief Holds the MAC address which is used by the DHCP client. */
@@ -116,6 +131,9 @@ unsigned char NetInit(void)
 	ARPTimerTimeOut = TimerGet() + NET_UIP_ARP_TIMER_MS;
 	garpAnnouncementsPending = 2u;
 	garpTimerTimeOut = TimerGet() + NET_GARP_INITIAL_DELAY_MS;
+	garpKeepAliveTimeOut = 0u;
+	netRelevantRxSeen = 0u;
+	netRelevantRxCount = 0u;
 	/* initialize the uIP TCP/IP stack. */
 	uip_init();
 	uip_arp_init();
@@ -145,6 +163,11 @@ unsigned char NetInit(void)
 #endif
 	/* start listening on the configured port on TCP/IP */
 	uip_listen(HTONS(BOOT_COM_NET_OPEN_PORT));
+	/* uip_listen(HTONS(NET_LEGACY_PC_TOOL_PORT)); */
+	debugPrintOnce = true;
+	Debug_Print_Out("TCP listen port = ", (uint32_t)BOOT_COM_NET_OPEN_PORT, 0, 0u, dbug_num_type_U32);
+	/* debugPrintOnce = true; */
+	/* Debug_Print_Out("TCP listen legacy port = ", (uint32_t)NET_LEGACY_PC_TOOL_PORT, 0, 0u, dbug_num_type_U32); */
 	/* initialize the MAC and set the MAC address */
 	netdev_init_mac();  
 
@@ -158,6 +181,44 @@ unsigned char NetInit(void)
 	return boot_TRUE;
 } /*** end of NetInit ***/
 
+
+static unsigned short NetReadBe16(const unsigned char *data)
+{
+  return (unsigned short)(((unsigned short)data[0] << 8) | (unsigned short)data[1]);
+}
+
+static unsigned char NetArpTargetsHost(const struct net_arp_hdr *arp)
+{
+  if (arp == 0)
+  {
+    return 0u;
+  }
+
+  if ((arp->dipaddr[0] == uip_hostaddr[0]) && (arp->dipaddr[1] == uip_hostaddr[1]))
+  {
+    return 1u;
+  }
+
+  return 0u;
+}
+
+static unsigned char NetIpv4DestIsHost(const unsigned char *frame)
+{
+  if (frame == 0)
+  {
+    return 0u;
+  }
+
+  if ((frame[30] == (unsigned char)((uip_hostaddr[0] >> 8) & 0xFFu)) &&
+      (frame[31] == (unsigned char)(uip_hostaddr[0] & 0xFFu)) &&
+      (frame[32] == (unsigned char)((uip_hostaddr[1] >> 8) & 0xFFu)) &&
+      (frame[33] == (unsigned char)(uip_hostaddr[1] & 0xFFu)))
+  {
+    return 1u;
+  }
+
+  return 0u;
+}
 
 static void NetSendGratuitousArpFrame(unsigned short opcode)
 {
@@ -191,16 +252,17 @@ static void NetSendGratuitousArpFrame(unsigned short opcode)
 	msg = (opcode == NET_ARP_REPLY) ? "GARP reply send" : "GARP request send";
 	debugPrintOnce = true;
 	Debug_Print_Out(msg, 0u, 0, 0u, dbug_num_type_str);
-	debugPrintOnce = true;
-	Debug_Print_Data_Array("GARP src mac = ", &uip_ethaddr.addr[0], 6u);
-	debugPrintOnce = true;
-	Debug_Print_Out("GARP opcode = ", (uint32_t)opcode, 0, 0u, dbug_num_type_U32);
-	debugPrintOnce = true;
-	Debug_Print_Out("GARP ip = ", 0u, 0, 0u, dbug_num_type_str);
-	Debug_Print_Out("  ip[0] = ", (uint32_t)((uip_hostaddr[0] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
-	Debug_Print_Out("  ip[1] = ", (uint32_t)(uip_hostaddr[0] & 0xFFu), 0, 0u, dbug_num_type_U32);
-	Debug_Print_Out("  ip[2] = ", (uint32_t)((uip_hostaddr[1] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32);
-	Debug_Print_Out("  ip[3] = ", (uint32_t)(uip_hostaddr[1] & 0xFFu), 0, 0u, dbug_num_type_U32);
+	/* GARP MAC/IP detail is already validated and is temporarily silenced to reduce log noise. */
+	/* debugPrintOnce = true; */
+	/* Debug_Print_Data_Array("GARP src mac = ", &uip_ethaddr.addr[0], 6u); */
+	/* debugPrintOnce = true; */
+	/* Debug_Print_Out("GARP opcode = ", (uint32_t)opcode, 0, 0u, dbug_num_type_U32); */
+	/* debugPrintOnce = true; */
+	/* Debug_Print_Out("GARP ip = ", 0u, 0, 0u, dbug_num_type_str); */
+	/* Debug_Print_Out("  ip[0] = ", (uint32_t)((uip_hostaddr[0] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32); */
+	/* Debug_Print_Out("  ip[1] = ", (uint32_t)(uip_hostaddr[0] & 0xFFu), 0, 0u, dbug_num_type_U32); */
+	/* Debug_Print_Out("  ip[2] = ", (uint32_t)((uip_hostaddr[1] >> 8) & 0xFFu), 0, 0u, dbug_num_type_U32); */
+	/* Debug_Print_Out("  ip[3] = ", (uint32_t)(uip_hostaddr[1] & 0xFFu), 0, 0u, dbug_num_type_U32); */
 	netdev_send();
 	uip_len = 0u;
 }
@@ -218,8 +280,24 @@ static void NetHandleGratuitousArpAnnouncement(void)
 		{
 			NetSendGratuitousArpFrame(NET_ARP_REPLY);
 			garpTimerTimeOut = 0u;
+			garpKeepAliveTimeOut = 0u;
 		}
 		garpAnnouncementsPending--;
+	}
+	/* Periodic GARP keepalive resend is intentionally disabled for this debug round. */
+	else if ((garpAnnouncementsPending == 0u) &&
+	         (netRelevantRxSeen == 0u) &&
+	         (garpKeepAliveTimeOut != 0u) &&
+	         (TimerGet() >= garpKeepAliveTimeOut))
+	{
+		/* garpKeepAlivePrintDiv++; */
+		/* if ((garpKeepAlivePrintDiv == 1u) || ((garpKeepAlivePrintDiv & 0x3u) == 0u)) */
+		/* { */
+		/* 	debugPrintOnce = true; */
+		/* 	Debug_Print_Out("GARP keepalive resend", netRelevantRxCount, 0, 0u, dbug_num_type_U32); */
+		/* } */
+		/* NetSendGratuitousArpFrame(NET_ARP_REPLY); */
+		garpKeepAliveTimeOut = 0u;
 	}
 }
 
@@ -285,8 +363,6 @@ void NetApp(void)
 		memset(&s->receiveInfo, 0, sizeof(s->receiveInfo));
 		memset(&s->transmitInfo, 0, sizeof(s->transmitInfo));
 		s->rx_accum_len = 0u;
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp0", 0, 0, 0, dbug_num_type_str);
 	}
 
 	if(uip_closed() || uip_aborted() || uip_timedout()){
@@ -297,30 +373,20 @@ void NetApp(void)
 		memset(&s->receiveInfo, 0, sizeof(s->receiveInfo));
 		memset(&s->transmitInfo, 0, sizeof(s->transmitInfo));
 		s->rx_accum_len = 0u;
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp1", 0, 0, 0, dbug_num_type_str);
 		return;
 	}
 
 	if(uip_acked()){
 		/* dto sent so reset the pending flag. */
 		s->dto_tx_pending = boot_FALSE;
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp2", 0, 0, 0, dbug_num_type_str);
 	}
 
 	if(uip_rexmit()){
 	/* is a dto transmission pending that should now be retransmitted? */
 	/* retransmit the currently pending dto response */
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp3", 0, 0, 0, dbug_num_type_str);
 		if(s->dto_tx_pending == boot_TRUE){
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp4", 0, 0, 0, dbug_num_type_str);
 			/* resend the last pending dto response */
 			uip_send(s->dto_data, s->dto_len);
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp5", 0, 0, 0, dbug_num_type_str);
 		}
 	}
 
@@ -329,17 +395,11 @@ void NetApp(void)
 	 * because then it is possible to asynchronously send data. otherwise data is
 	 * only really send after a newly received packet was received.
 	 */
-	 	debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp6", 0, 0, 0, dbug_num_type_str);
 		Bootloader_Transmit_Data_Hanlder(s);
 		if(s->dto_tx_req == boot_TRUE){
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp7", 0, 0, 0, dbug_num_type_str);
 			/* reset the transmit request flag. */
 			s->dto_tx_req = boot_FALSE;
 			if (s->dto_len > 0){
-				debugPrintOnce = true; //qqqq
-				Debug_Print_Out("netapp8", 0, 0, 0, dbug_num_type_str);
 				/* set the transmit pending flag. */
 				s->dto_tx_pending = boot_TRUE;
 				/* submit the data for transmission. */
@@ -348,30 +408,18 @@ void NetApp(void)
 		}
 	}
 	if(uip_newdata()){
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp9", 0, 0, 0, dbug_num_type_str);
 		/* Accumulate raw TCP payload (includes 4-byte index counter) */
 		if(uip_datalen() > 0){
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp10", 0, 0, 0, dbug_num_type_str);
 			uint16_t in_len = (uint16_t)uip_datalen();
 			if(in_len > 0u){
-				debugPrintOnce = true; //qqqq
-				Debug_Print_Out("netapp11", 0, 0, 0, dbug_num_type_str);
 				if(in_len > (uint16_t)sizeof(s->rx_accum)){
 					/* oversize payload: drop */
 					s->rx_accum_len = 0u;
-					debugPrintOnce = true; //qqqq
-					Debug_Print_Out("netapp12", 0, 0, 0, dbug_num_type_str);
 				}
 				else{
-					debugPrintOnce = true; //qqqq
-					Debug_Print_Out("netapp13", 0, 0, 0, dbug_num_type_str);
 					if((s->rx_accum_len + in_len) > (uint16_t)sizeof(s->rx_accum)){
 						/* overflow protection: drop accumulated data */
 						s->rx_accum_len = 0u;
-						debugPrintOnce = true; //qqqq
-						Debug_Print_Out("netapp14", 0, 0, 0, dbug_num_type_str);
 					}
 					memcpy(&s->rx_accum[s->rx_accum_len], (const void *)uip_appdata, (size_t)in_len);
 					s->rx_accum_len += in_len;
@@ -385,8 +433,6 @@ void NetApp(void)
 	 * so frames left in rx_accum after a prior ACK can continue to advance. */
 	if((s->dto_tx_pending == boot_FALSE) && (s->dto_tx_req == boot_FALSE) && (s->rx_accum_len > 0u)){
 		uint16_t offset = 0u;
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp15", 0, 0, 0, dbug_num_type_str);
 		while((s->rx_accum_len - offset) >= (uint16_t)(FIXED_INDEX_COUNT_SIZE + FIXED_LENGTH_SIZE)){
 			uint8_t *p = &s->rx_accum[offset];
 
@@ -443,20 +489,15 @@ void NetApp(void)
 			/* Process exactly one frame (strip index) */
 			newDataPtr = p;
 			newDataLen = (uint16_t)(FIXED_LENGTH_SIZE + dataLen + FIXED_CRC_SIZE);
-			debugPrintOnce = true;//qqqq
-			Debug_Print_Data_Array("uIP RX= ", &newDataPtr[FIXED_INDEX_COUNT_SIZE], (uint32_t)newDataLen);//qqqq
+			/* uIP RX frame dump temporarily silenced to reduce log noise. */
 			Bootloader_Receive_Data_Handler(s, &newDataPtr[FIXED_INDEX_COUNT_SIZE], (boot_int16u)newDataLen);
 
 			offset += frame_size;
 			break; /* one request per response */
 		}
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp16", 0, 0, 0, dbug_num_type_str);
 		if(offset > 0u){
 			memmove(s->rx_accum, &s->rx_accum[offset], (size_t)(s->rx_accum_len - offset));
 			s->rx_accum_len = (uint16_t)(s->rx_accum_len - offset);
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp17", 0, 0, 0, dbug_num_type_str);
 		}
 	}
 
@@ -464,11 +505,7 @@ void NetApp(void)
 	 * This avoids waiting for the next poll cycle before sending the ACK/response. */
 	if((s->dto_tx_pending == boot_FALSE) && (s->dto_tx_req == boot_TRUE)){
 		s->dto_tx_req = boot_FALSE;
-		debugPrintOnce = true; //qqqq
-		Debug_Print_Out("netapp18", 0, 0, 0, dbug_num_type_str);
 		if (s->dto_len > 0){
-			debugPrintOnce = true; //qqqq
-			Debug_Print_Out("netapp19", 0, 0, 0, dbug_num_type_str);
 			s->dto_tx_pending = boot_TRUE;
 			uip_send(s->dto_data, s->dto_len);
 		}
@@ -491,19 +528,111 @@ void NetTask(void)
   packetLen = netdev_read();
   if (packetLen > 0)
   {
-  	debugPrintOnce = true;//qqqq
-	Debug_Print_Out("packetLen = ", (uint32_t)packetLen, 0, 0u, dbug_num_type_U32);
+    unsigned short ethType;
+    unsigned char  relevantPacket = 0u;
 
-	debugPrintOnce = true;//qqqq
-	Debug_Print_Out("ethType = 0x", 0u, 0, (uint32_t)htons(NET_UIP_HEADER_BUF->type), dbug_num_type_HEX32);
+    ethType = htons(NET_UIP_HEADER_BUF->type);
     /* set uip_len for uIP stack usage */
     uip_len = (unsigned short)packetLen;
+
+    if (ethType == UIP_ETHTYPE_ARP)
+    {
+      struct net_arp_hdr *arp;
+      unsigned short opcode;
+
+      arp = (struct net_arp_hdr *)&uip_buf[0];
+      opcode = htons(arp->opcode);
+      if ((NetArpTargetsHost(arp) != 0u) && (opcode == NET_ARP_REQUEST))
+      {
+        relevantPacket = 1u;
+        netRelevantRxSeen = 1u;
+        netRelevantRxCount++;
+        debugPrintOnce = true;
+        Debug_Print_Out("RX relevant ARP request for host", netRelevantRxCount, 0, 0u, dbug_num_type_U32);
+      }
+      else if ((NetArpTargetsHost(arp) != 0u) && (opcode == NET_ARP_REPLY))
+      {
+        relevantPacket = 1u;
+        netRelevantRxSeen = 1u;
+        netRelevantRxCount++;
+        debugPrintOnce = true;
+        Debug_Print_Out("RX relevant ARP reply for host", netRelevantRxCount, 0, 0u, dbug_num_type_U32);
+      }
+    }
+    else if ((ethType == UIP_ETHTYPE_IP) && (packetLen >= 38u) && (NetIpv4DestIsHost((const unsigned char *)&uip_buf[0]) != 0u))
+    {
+      unsigned char proto;
+      proto = (unsigned char)uip_buf[23];
+      if ((proto == UIP_PROTO_TCP) && (packetLen >= 54u))
+      {
+        unsigned short dstPort;
+        unsigned char tcpFlags;
+
+        dstPort = NetReadBe16((const unsigned char *)&uip_buf[36]);
+        tcpFlags = (unsigned char)(uip_buf[47] & 0x3Fu);
+
+        debugPrintOnce = true;
+        Debug_Print_Out("RX host IPv4 TCP", (uint32_t)packetLen, 0, 0u, dbug_num_type_U32);
+        NetDebugPrintTcpCheckpoint("RX TCP dst port = ", (const unsigned char *)&uip_buf[0], packetLen);
+
+        if ((NetIsRelevantTcpPort(dstPort) != 0u) && ((tcpFlags & 0x02u) != 0u))
+        {
+          relevantPacket = 1u;
+          netRelevantRxSeen = 1u;
+          netRelevantRxCount++;
+          debugPrintOnce = true;
+          Debug_Print_Out("TCP SYN hit listen dst = ", (uint32_t)dstPort, 0, 0u, dbug_num_type_U32);
+        }
+        else if (NetIsRelevantTcpPort(dstPort) != 0u)
+        {
+          relevantPacket = 1u;
+          netRelevantRxSeen = 1u;
+          netRelevantRxCount++;
+          debugPrintOnce = true;
+          Debug_Print_Out("RX relevant TCP dst port", (uint32_t)dstPort, 0, 0u, dbug_num_type_U32);
+        }
+        else
+        {
+          debugPrintOnce = true;
+          Debug_Print_Out("RX drop tcp port mismatch = ", (uint32_t)dstPort, 0, 0u, dbug_num_type_U32);
+        }
+      }
+      else if (proto == UIP_PROTO_UDP)
+      {
+        relevantPacket = 1u;
+        netRelevantRxSeen = 1u;
+        netRelevantRxCount++;
+        debugPrintOnce = true;
+        Debug_Print_Out("RX relevant UDP for host", netRelevantRxCount, 0, 0u, dbug_num_type_U32);
+      }
+      else
+      {
+        relevantPacket = 1u;
+        netRelevantRxSeen = 1u;
+        netRelevantRxCount++;
+        debugPrintOnce = true;
+        Debug_Print_Out("RX relevant IPv4 for host", netRelevantRxCount, 0, 0u, dbug_num_type_U32);
+      }
+    }
+
+    if (relevantPacket != 0u)
+    {
+      debugPrintOnce = true;
+      Debug_Print_Out("packetLen = ", (uint32_t)packetLen, 0, 0u, dbug_num_type_U32);
+      debugPrintOnce = true;
+      Debug_Print_Out("ethType = 0x", 0u, 0, (uint32_t)ethType, dbug_num_type_HEX32);
+    }
 
     /* process incoming IP packets here. */
     if (NET_UIP_HEADER_BUF->type == htons(UIP_ETHTYPE_IP))
     {
-    	debugPrintOnce = true;//qqqq
-   		 Debug_Print_Out("RX IP", 0u, 0, 0u, dbug_num_type_str);
+      if (relevantPacket != 0u)
+      {
+        debugPrintOnce = true;
+        Debug_Print_Out("RX IP", 0u, 0, 0u, dbug_num_type_str);
+        debugPrintOnce = true;
+        Debug_Print_Out("RX deliver to uIP", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
+      }
       uip_arp_ipin();
       uip_input();
       /* if the above function invocation resulted in data that
@@ -512,16 +641,29 @@ void NetTask(void)
        */
       if (uip_len > 0)
       {
+        if (relevantPacket != 0u)
+        {
+          debugPrintOnce = true;
+          Debug_Print_Out("uIP produced TX len = ", (uint32_t)uip_len, 0, 0u, dbug_num_type_U32);
+        }
         uip_arp_out();
         netdev_send();
         uip_len = 0;
+      }
+      else if (relevantPacket != 0u)
+      {
+        debugPrintOnce = true;
+        Debug_Print_Out("uIP no TX response", 0u, 0, 0u, dbug_num_type_str);
       }
     }
     /* process incoming ARP packets here. */
     else if (NET_UIP_HEADER_BUF->type == htons(UIP_ETHTYPE_ARP))
     {
-    	debugPrintOnce = true;//qqqq
-    	Debug_Print_Out("RX ARP", 0u, 0, 0u, dbug_num_type_str);
+      if (relevantPacket != 0u)
+      {
+        debugPrintOnce = true;
+        Debug_Print_Out("RX ARP", 0u, 0, 0u, dbug_num_type_str);
+      }
       uip_arp_arpin();
 
       /* if the above function invocation resulted in data that
@@ -600,3 +742,38 @@ void NetTask(void)
 
 
 /*********************************** end of net.c **************************************/
+static unsigned char NetIsRelevantTcpPort(unsigned short dstPort)
+{
+  if (dstPort == NET_RELEVANT_RX_LOG_PORT)
+  {
+    return 1u;
+  }
+
+  return 0u;
+}
+
+static void NetDebugPrintTcpCheckpoint(const char *prefix, const unsigned char *frame, unsigned long packetLen)
+{
+  unsigned short srcPort;
+  unsigned short dstPort;
+  unsigned char flags;
+
+  if ((frame == 0) || (packetLen < 54u))
+  {
+    return;
+  }
+
+  srcPort = NetReadBe16(&frame[34]);
+  dstPort = NetReadBe16(&frame[36]);
+  flags = (unsigned char)(frame[47] & 0x3Fu);
+
+  debugPrintOnce = true;
+  Debug_Print_Out(prefix, (uint32_t)dstPort, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("TCP src port = ", (uint32_t)srcPort, 0, 0u, dbug_num_type_U32);
+  debugPrintOnce = true;
+  Debug_Print_Out("TCP flags = 0x", 0u, 0, (uint32_t)flags, dbug_num_type_HEX32);
+}
+
+
+
